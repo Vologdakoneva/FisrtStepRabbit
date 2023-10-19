@@ -1,0 +1,140 @@
+﻿@page
+@using NonFactors.Mvc.Grid;
+@model Pacient
+<script type="text/javascript">
+    //alert('sd');
+    //debugger;
+    //window.onload = onloaded;
+    //function onloaded() {
+        const grid = document.querySelector(".mvc-grid");
+        //debugger;
+        // alert('sd');
+        // Triggered when grid's row is clicked. It's recommended to use event delegation in ajax scenarios.
+        //document.addEventListener("rowclick", e => {
+            //e.detail.data - clicked row's data from columns.
+            //e.detail.grid - grid's instance.
+       // debugger;
+         //   alert('sd');
+            //e.detail.originalEvent - original tr click event which triggered the rowclick.
+        });
+    //}
+</script>
+
+@{
+    ViewData["Title"] = "Пациенты";
+}
+<link href="~/css/mvc-grid/mvc-grid.css" rel="stylesheet">
+<style>
+    .working {
+        background-color: #ecffec;
+    }
+</style>
+
+
+<h1>@ViewData["Title"]</h1>
+
+<p>Перечень пациентов и состояние передачи.</p>
+@if (Model == null)
+{
+     <label>"Загрузка"</label>
+}
+
+
+@if (Model != null)
+{ 
+@(Html
+    .Grid(Model.Persons)
+    .Build(columns =>
+    {
+        columns.Add(model => model.successfully).Titled("Успешно")
+                .RenderedAs(model => model.successfully == true ?
+                    Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' checked />")
+                       : Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' />"));
+        columns.Add(model => model.FamilyPerson).Titled("Фамилия");
+        columns.Add(model => model.NamePerson).Titled("Имя");
+        columns.Add(model => model.FathersPerson).Titled("Отчество");
+
+        columns.Add(model => model.birthDayPerson).Titled("Дата рождения").Formatted("{0:d}");
+        columns.Add(model => model.Sex_Person).Titled("Пол");
+        columns.Add(model => model.SnilsPerson).Titled("Снилс");
+        columns.Add(model => model.IdPromedPerson).Titled("Id в промед");
+    })
+    .Using(GridFilterMode.Header)
+    .Empty("Нет данных")
+    .Filterable()
+    .Sortable()
+    .Pageable()
+    .Id("GridPacient")
+    .Using(GridFilterMode.Row)
+        .Css("css-classes")
+        .AppendCss("table-hover")
+        .Attributed(new { data_type = "individuals" })
+        .RowAttributed(model => new { @class = model.successfully == true ? "working" : null, data_id = model.IDALL })
+)
+    <button type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#GFG">
+        Show Modal
+    </button>
+    <a href="javascript:void" data-bs-toggle="modal" data-bs-target="#GFG"> Лог </a>
+
+    <div class="modal fade" id="GFG">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Modal
+                    </h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>I am a Modal</p>
+                    <p>
+                        Bootstrap Modal Via Data Attributes
+                    </p>
+                    @(Html
+                        .Grid(Model.Persons)
+                        .Build(columns =>
+                        {
+                            columns.Add(model => model.successfully).Titled("Успешно")
+                            .RenderedAs(model => model.successfully == true ?
+                            Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' checked />")
+                            : Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' />"));
+                            columns.Add(model => model.FamilyPerson).Titled("Фамилия");
+                            columns.Add(model => model.NamePerson).Titled("Имя");
+                            columns.Add(model => model.FathersPerson).Titled("Отчество");
+
+                            columns.Add(model => model.birthDayPerson).Titled("Дата рождения").Formatted("{0:d}");
+                            columns.Add(model => model.Sex_Person).Titled("Пол");
+                            columns.Add(model => model.SnilsPerson).Titled("Снилс");
+                            columns.Add(model => model.IdPromedPerson).Titled("Id в промед");
+                        })
+                        .Using(GridFilterMode.Header)
+                        .Empty("Нет данных")
+                        .Filterable()
+                        .Sortable()
+                        .Pageable()
+                        .Id("GridPacient")
+                        .Using(GridFilterMode.Row)
+                        .Css("css-classes")
+                        .AppendCss("table-hover")
+                        .Attributed(new { data_type = "individuals" })
+                        .RowAttributed(model => new { @class = model.successfully == true ? "working" : null, data_id = model.IDALL })
+                        )
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script src="~/js/mvc-grid/mvc-grid_rus.js"></script>

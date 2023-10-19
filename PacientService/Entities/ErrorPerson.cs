@@ -1,0 +1,22 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
+
+namespace PacientService.Entities
+{
+    public class ErrorPerson
+    {
+        [Key]
+        [Display(Name = "IDALL")]
+        public int IDALL { get; set; }
+
+        public Guid? PersonLink { get; set; }
+
+        [Display(Name = "Описание ошибки")]
+        public string? ErrorText { get; set; } = string.Empty;
+
+        [Display(Name = "Дата ошибки")]
+        public DateTime DataError { get; set; } = DateTime.Now;
+
+
+    }
+}

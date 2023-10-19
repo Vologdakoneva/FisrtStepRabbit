@@ -1,0 +1,63 @@
+﻿
+@using Newtonsoft.Json;
+@using PacientService.Entities;
+@using Plain.RabbitMQ;
+@using NonFactors.Mvc.Grid;
+@inject IPublisher publisher;
+
+
+<PageTitle>Counter</PageTitle>
+<link href="~/css/mvc-grid/mvc-grid.css" rel="stylesheet">
+
+
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+   
+
+@if (Persons != null){
+
+
+    
+    @foreach (var Person in Persons)
+
+{
+    <p>
+        @Person.DataCreatePerson.ToShortDateString()
+    </p>
+    <p>   @Person.IDALL</p>
+}
+}
+
+@code {
+    private int currentCount = 0;
+    private Person[]? Persons;
+
+    public async Task<string> GetAsync(string uri)
+    {
+        HttpClient _client = new HttpClient();
+        using HttpResponseMessage response = await _client.GetAsync(uri);
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    private async void IncrementCount()
+    {
+
+        currentCount++;
+        string Respose = await GetAsync("http://localhost:39289/api/Pacient");
+        Persons = JsonConvert.DeserializeObject<Person[]>(Respose);
+
+        publisher.Publish("Hello", "Pacientkey.Update", null);
+
+        //publisher.Publish(JsonConvert.SerializeObject(object), "Pacientkey.Update", headers);
+        
+        //publisher.Publish("Hello", "Pacientkey.Update", null);
+    }
+}
+
+  
