@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PacientService.Entities;
 using PacientService.Repositories.Interfaces;
+using PromedExchange;
 
 namespace PacientService.Data
 {

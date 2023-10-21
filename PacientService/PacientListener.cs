@@ -28,7 +28,7 @@ namespace PacientService
             //{
             //    //orderDeletor.Delete(response.OrderId).GetAwaiter().GetResult();
             //}
-            Thread.Sleep(40000);
+            //Thread.Sleep(40000);
             return true;
         }
 

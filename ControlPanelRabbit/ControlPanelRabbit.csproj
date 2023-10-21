@@ -15,13 +15,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Person .cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NonFactors.Grid.Core.Mvc6" Version="7.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PacientService\PacientService.csproj" />
     <ProjectReference Include="..\Plain.RabbitMQ\Plain.RabbitMQ.csproj" />
+    <ProjectReference Include="..\PromedExchange\PromedExchange.csproj" />
   </ItemGroup>
 
 </Project>

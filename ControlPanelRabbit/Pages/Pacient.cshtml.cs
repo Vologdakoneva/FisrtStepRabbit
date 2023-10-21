@@ -1,7 +1,7 @@
-﻿using ContolPanelRabbit;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using PromedExchange;
 
 namespace ControlPanelRabbit.Pages
 {

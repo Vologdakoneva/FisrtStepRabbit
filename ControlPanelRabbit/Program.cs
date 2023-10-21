@@ -9,7 +9,7 @@ builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider("amqp:
 builder.Services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
     "promed-exchange",
     "pacient-queue",
-    "Pacientkey.*",
+    "Pacientkey.Update",
  ExchangeType.Topic));
 builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(),
     "promed-exchange",

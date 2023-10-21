@@ -1,6 +1,7 @@
 ﻿using PacientService.Data;
 using PacientService.Entities;
 using PacientService.Repositories.Interfaces;
+using PromedExchange;
 
 namespace PacientService.Repositories.Entities
 {
