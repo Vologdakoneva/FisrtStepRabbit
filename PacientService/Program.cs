@@ -45,11 +45,12 @@ var services = builder.Services;
 builder.Services.AddScoped<ISetups, SetupsRepository>();
 builder.Services.AddScoped<IPerson, PersonsRepository>();
 
+
 builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider("amqp://guest:guest@185.244.78.231:5672"));
 builder.Services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
     "promed-exchange",
     "pacient-queue",
-    "Pacientkey.*",
+    "pacientkey.*",
  ExchangeType.Topic));
 builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(),
     "promed-exchange",

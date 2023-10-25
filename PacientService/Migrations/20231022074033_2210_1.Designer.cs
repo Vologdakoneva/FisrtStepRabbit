@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PacientService.Data;
@@ -11,9 +12,10 @@ using PacientService.Data;
 namespace PacientService.Migrations
 {
     [DbContext(typeof(PacientDbContext))]
-    partial class PacientDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231022074033_2210_1")]
+    partial class _2210_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,9 +34,6 @@ namespace PacientService.Migrations
 
                     b.Property<DateTime>("DataError")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("ErrorSource")
-                        .HasColumnType("text");
 
                     b.Property<string>("ErrorText")
                         .HasColumnType("text");

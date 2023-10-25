@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using Plain.RabbitMQ;
 using PromedExchange;
+using RabbitMQ.Client;
+using System.Reflection.PortableExecutable;
 using System.Xml.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -42,7 +44,7 @@ namespace ControlPanelRabbit.Pages.Api
             [FromQuery(Name = "viddoc")] int? viddoc,
             [FromQuery(Name = "SeriaDoc")] string? SeriaDoc,
             [FromQuery(Name = "NomDoc")] string? NomDoc,
-            [FromQuery(Name = "DataDoc")] DateTime? DataDoc,
+            [FromQuery(Name = "DataDoc")] string? DataDoc,
             [FromQuery(Name = "KemVidan")] string? KemVidan,
             [FromQuery(Name = "Foms")] string? Foms,
             [FromQuery(Name = "FomsKod")] string? FomsKod,
@@ -58,15 +60,19 @@ namespace ControlPanelRabbit.Pages.Api
                 person.FamilyPerson = FamilyPerson;
                 person.NamePerson = NamePerson;
                 person.FathersPerson = FathersPerson;
-                person.birthDayPerson = Convert.ToDateTime( birthDayPerson );
+                if (birthDayPerson!="")
+                person.birthDayPerson = Convert.ToDateTime( birthDayPerson);
+                person.SnilsPerson = SnilsPerson;
                 person.Sex_idPerson = Sex_idPerson;
+                person.Sex_Person = Sex_Person;
                 person.SocStatus_Person = SocStatus_Person;
                 person.SocStatus_id_Person = SocStatus_id_Person;
                 person.Inn_Person = Inn_Person;
                 person.viddoc = viddoc;
                 person.SeriaDoc = SeriaDoc;
                 person.NomDoc = NomDoc;
-                person.DataDoc = DataDoc;
+                if (DataDoc != "")
+                    person.DataDoc = Convert.ToDateTime( DataDoc );
                 person.KemVidan = KemVidan;
                 person.FomsName = Foms;
                 person.FomsKod = FomsKod;
@@ -76,8 +82,13 @@ namespace ControlPanelRabbit.Pages.Api
 
 
                 string personString = JsonConvert.SerializeObject(person);
-            publisher.Publish("Hello", "Pacientkey.Update",null);
+                Dictionary<string, object> headers = new Dictionary<string, object> { { "", null } };
+
+                publisher.Publish(personString, "pacientkey.update", null);
+
+
             }
+
             return new string[] { "value1", "value2" };
         }
 

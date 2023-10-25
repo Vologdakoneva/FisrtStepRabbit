@@ -28,9 +28,9 @@ namespace Plain.RabbitMQ
         {
             var body = Encoding.UTF8.GetBytes(message);
             var properties = _model.CreateBasicProperties();
-            properties.Persistent = true;
-            properties.Headers = messageAttributes;
-            properties.Expiration = timeToLive;
+            //properties.Persistent = true;
+            //properties.Headers = messageAttributes;
+            //properties.Expiration = timeToLive;
 
             _model.BasicPublish(_exchange, routingKey, properties, body);
         }

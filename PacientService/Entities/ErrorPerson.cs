@@ -11,6 +11,9 @@ namespace PacientService.Entities
 
         public Guid? PersonLink { get; set; }
 
+        [Display(Name = "Источник ошибки")]
+        public string? ErrorSource { get; set; } = string.Empty;
+
         [Display(Name = "Описание ошибки")]
         public string? ErrorText { get; set; } = string.Empty;
 

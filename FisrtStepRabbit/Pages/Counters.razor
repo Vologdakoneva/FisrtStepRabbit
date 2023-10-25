@@ -1,4 +1,4 @@
-﻿
+﻿@page "/counter"
 @using Newtonsoft.Json;
 @using PacientService.Entities;
 @using Plain.RabbitMQ;
@@ -49,8 +49,8 @@
     {
 
         currentCount++;
-        string Respose = await GetAsync("http://localhost:39289/api/Pacient");
-        Persons = JsonConvert.DeserializeObject<Person[]>(Respose);
+        //string Respose = await GetAsync("http://localhost:39289/api/Pacient");
+        //Persons = JsonConvert.DeserializeObject<Person[]>(Respose);
 
         publisher.Publish("Hello", "Pacientkey.Update", null);
 
