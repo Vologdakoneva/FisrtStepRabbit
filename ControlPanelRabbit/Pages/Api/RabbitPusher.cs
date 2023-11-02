@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Plain.RabbitMQ;
-using PromedExchange;
 using RabbitMQ.Client;
 using System.Reflection.PortableExecutable;
 using System.Xml.Linq;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -89,7 +89,7 @@ namespace ControlPanelRabbit.Pages.Api
 
             }
 
-            return new string[] { "value1", "value2" };
+            return new string[] { "Оработка", "Сообщение передано." };
         }
 
         // GET api/<RabbitPusher>/5

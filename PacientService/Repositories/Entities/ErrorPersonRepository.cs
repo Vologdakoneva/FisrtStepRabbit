@@ -1,4 +1,5 @@
-﻿using PacientService.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PacientService.Data;
 using PacientService.Entities;
 using PacientService.Repositories.Interfaces;
 
@@ -30,7 +31,11 @@ namespace PacientService.Repositories.Entities
 
         public void SaveGetError(ErrorPerson entity)
         {
-            throw new NotImplementedException();
+            if (entity.IDALL == default)
+                context.Entry(entity).State = EntityState.Added;
+            else
+                context.Entry(entity).State = EntityState.Modified;
+            context.SaveChanges();
         }
     }
 }

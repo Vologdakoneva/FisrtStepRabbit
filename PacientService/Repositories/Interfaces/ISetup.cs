@@ -1,5 +1,5 @@
 ﻿using PacientService.Entities;
-using static PacientService.Repositories.Interfaces.ISetups;
+
 
 namespace PacientService.Repositories.Interfaces
 {

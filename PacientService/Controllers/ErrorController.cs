@@ -2,7 +2,6 @@
 using PacientService.Entities;
 using PacientService.Repositories.Interfaces;
 using Plain.RabbitMQ;
-//using PromedExchange;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,47 +9,43 @@ namespace PacientService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PacientController : ControllerBase
+    public class ErrorController : ControllerBase
     {
-        private readonly IPerson Person;
+        private readonly IErrorPerson errorPerson;
         private readonly IPublisher publisher;
 
-        public PacientController(IPerson person, IPublisher publisher)
+        public ErrorController(IErrorPerson errorPerson, IPublisher publisher) 
         {
-            PromedExchange.Promed promedexchage;
-            promedexchage = new PromedExchange.Promed(false);
-            this.Person = person;
+            this.errorPerson = errorPerson;
             this.publisher = publisher;
         }
-        // GET: api/<PacientController>
+        // GET: api/<ErrorController>
         [HttpGet]
-        public IQueryable<Person> Get()
+        public IQueryable<ErrorPerson> Get()
         {
-            //Promed pormed = new Promed();
-            //pormed.SendGet("");
-            return Person.GetPersons(); //new string[] { "value1", "value2" };
+            return errorPerson.GetErrors();
         }
 
-        // GET api/<PacientController>/5
+        // GET api/<ErrorController>/5
         [HttpGet("{id}")]
-        public Person Get(Guid id)
+        public string Get(int id)
         {
-            return Person.GetPersonByEntity(id);
+            return "value";
         }
 
-        // POST api/<PacientController>
+        // POST api/<ErrorController>
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT api/<PacientController>/5
+        // PUT api/<ErrorController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/<PacientController>/5
+        // DELETE api/<ErrorController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {

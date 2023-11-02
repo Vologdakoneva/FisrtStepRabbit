@@ -5,7 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider("amqp://guest:guest@185.244.78.231:5672"));
+string connString = builder.Configuration.GetConnectionString("RabbitMQ");
+
+builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider(connString));
 builder.Services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
     "promed-exchange",
     "pacient-queue",
@@ -23,7 +25,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
 }
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

@@ -1,16 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PacientService.Controllers;
 using PacientService.Data;
 using PacientService.Entities;
-using PacientService.Migrations;
+//using PacientService.Migrations;
 using PacientService.Repositories.Entities;
 using PacientService.Repositories.Interfaces;
 using Plain.RabbitMQ;
 using PromedExchange;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 
 namespace PacientService
 {
@@ -37,17 +39,17 @@ namespace PacientService
 
         private bool Subscribe(string message, IDictionary<string, object> header)
         {
-            Person response = JsonConvert.DeserializeObject<Person>(message);
+            PacientService.Entities.Person response = JsonConvert.DeserializeObject<PacientService.Entities.Person>(message);
             if (response != null)
                 using (var scope = serviceScopeFactory.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<PacientDbContext>();
 
-                    if (response.FathersPerson == "" )
+                    if (response.FathersPerson == "")
                     {
-                        ErrorPerson errorPerson = new ErrorPerson();
+                        PacientService.Entities.ErrorPerson errorPerson = new PacientService.Entities.ErrorPerson();
                         errorPerson.PersonLink = response.PersonLink;
-                        errorPerson.ErrorText = "Не указано отчество";
+                        errorPerson.ErrorText = "Не указано отчество" + response.NamePerson + " " + response.FamilyPerson + " " ;
                         errorPerson.ErrorSource = "1С";
                         dbContext.ErrorPerson.Add(errorPerson);
                         dbContext.SaveChanges();
@@ -55,64 +57,65 @@ namespace PacientService
                     }
                     if (response.NamePerson == "")
                     {
-                        ErrorPerson errorPerson = new ErrorPerson();
+                        PacientService.Entities.ErrorPerson errorPerson = new PacientService.Entities.ErrorPerson();
                         errorPerson.PersonLink = response.PersonLink;
-                        errorPerson.ErrorText = "Не указано имя пацинта";
+                        errorPerson.ErrorText = "Не указано имя пацинта" +  response.FamilyPerson + " " + response.FathersPerson;
                         errorPerson.ErrorSource = "1С";
                         dbContext.ErrorPerson.Add(errorPerson);
                         dbContext.SaveChanges();
                         return true;
                     }
-                    if (response.SnilsPerson == "")
+                    if (response.SnilsPerson == "" || response.SnilsPerson == null)
                     {
-                        ErrorPerson errorPerson = new ErrorPerson();
+                        PacientService.Entities.ErrorPerson errorPerson = new PacientService.Entities.ErrorPerson();
                         errorPerson.PersonLink = response.PersonLink;
-                        errorPerson.ErrorText = "Не указан СНИЛС пацинта";
+                        errorPerson.ErrorText = "Не указан СНИЛС пацинта " + response.NamePerson + " " + response.FamilyPerson + " " + response.FathersPerson;
                         errorPerson.ErrorSource = "1С";
                         dbContext.ErrorPerson.Add(errorPerson);
                         dbContext.SaveChanges();
                         return true;
                     }
 
-                    Person? person = dbContext.Person.Where(p => p.PersonLink == response.PersonLink).FirstOrDefault();
-                if (person==null)
-                {
-                    dbContext.Person.Add(response);
-                    dbContext.SaveChanges();
-                }
-                else
+                    PacientService.Entities.Person? person = dbContext.Person.Where(p => p.PersonLink == response.PersonLink).FirstOrDefault();
+                    if (person == null)
+                    {
+                        dbContext.Person.Add(response);
+                        dbContext.SaveChanges();
+                        person = dbContext.Person.Where(p => p.PersonLink == response.PersonLink).FirstOrDefault();
+                    }
+                    else
                     {
                         var entityProperties = person.GetType().GetProperties();
                         dbContext.Entry(person).State = EntityState.Modified;
                         dbContext.Person.Attach(person);
 
-                            foreach (var ep in entityProperties)
-                            {
-                                if (ep.Name != "IDALL") {
+                        foreach (var ep in entityProperties)
+                        {
+                            if (ep.Name != "IDALL") {
                                 dbContext.Entry(person).Property(ep.Name).IsModified = true;
                                 dbContext.Entry(person).Property(ep.Name).CurrentValue = dbContext.Entry(response).Property(ep.Name).CurrentValue;
                             }
                         }                        //response.IDALL = person.IDALL;
-                                                     //person = response;
-                                                     //dbContext.Entry(person).CurrentValues.SetValues(response);
-                                                     //dbContext.Entry(person).State = EntityState.Modified;
-                            dbContext.SaveChanges();
+                                                 //person = response;
+                                                 //dbContext.Entry(person).CurrentValues.SetValues(response);
+                                                 //dbContext.Entry(person).State = EntityState.Modified;
+                        dbContext.SaveChanges();
                     }
 
 
 
-                    int idperson = promed.GetPerson(response);  ////promed.SendPut("","");
+                    Int64 idperson = promed.GetPerson(ConvertPerson(response));  ////promed.SendPut("","");
                     // Добавить пациента
                     if (idperson == -1) {
-                        idperson = promed.savePerson(response);
+                        idperson = promed.savePerson(ConvertPerson(response));
                     }
-                    
+
                     if (idperson != -1) {
                         if (response.SeriaDoc == "" || response.NomDoc == "")
                         {
-                            ErrorPerson errorPerson = new ErrorPerson();
+                            PacientService.Entities.ErrorPerson errorPerson = new PacientService.Entities.ErrorPerson();
                             errorPerson.PersonLink = response.PersonLink;
-                            errorPerson.ErrorText = "Не указан паспорт";
+                            errorPerson.ErrorText = "Не указан паспорт" + response.NamePerson + " " + response.FamilyPerson + " " + response.FathersPerson;
                             errorPerson.ErrorSource = "1С";
                             dbContext.ErrorPerson.Add(errorPerson);
                             dbContext.SaveChanges();
@@ -120,18 +123,18 @@ namespace PacientService
                         }
                         else  // Работа с паспортом
                         {
-                        
+
                         }
 
-                            dbContext.Entry(person).Property("IdPromedPerson").IsModified = true;
-                            dbContext.Entry(person).Property("IdPromedPerson").CurrentValue = idperson;
-                            dbContext.Entry(person).Property("successfully").IsModified = true;
-                            dbContext.Entry(person).Property("successfully").CurrentValue = true;
-                            dbContext.SaveChanges();
+                        dbContext.Entry(person).Property("IdPromedPerson").IsModified = true;
+                        dbContext.Entry(person).Property("IdPromedPerson").CurrentValue = idperson;
+                        dbContext.Entry(person).Property("successfully").IsModified = true;
+                        dbContext.Entry(person).Property("successfully").CurrentValue = true;
+                        dbContext.SaveChanges();
                     }
                     else
                     {
-                        ErrorPerson errorPerson = new ErrorPerson();
+                        PacientService.Entities.ErrorPerson errorPerson = new PacientService.Entities.ErrorPerson();
                         errorPerson.PersonLink = person.PersonLink;
                         errorPerson.ErrorText = promed.error_msg;
                         errorPerson.ErrorSource = "Промед";
@@ -147,6 +150,22 @@ namespace PacientService
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+
+        public PromedExchange.Person ConvertPerson(PacientService.Entities.Person person) {
+               
+            PromedExchange.Person result = new PromedExchange.Person();
+
+
+            foreach (PropertyInfo property in typeof(PacientService.Entities.Person).GetProperties().Where(p => p.CanWrite))
+            {
+                var objectset = typeof(PromedExchange.Person).GetProperties().FirstOrDefault(p => p.Name == property.Name);
+                objectset.SetValue(result, property.GetValue(person));
+
+
+                //property.SetValue(objectset, property.GetValue(person, null), null);
+            }
+            return result;
         }
          
     }

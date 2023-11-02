@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+
+
 namespace PromedExchange
 {
     public class Promed
@@ -32,6 +34,7 @@ namespace PromedExchange
 
         public string SendPost(string ApiUrl, string Data)
         {
+            if (!Logined) { Login(); }
             CookieContainer SessionCookieHolder = new CookieContainer();
             try
             {
@@ -40,6 +43,7 @@ namespace PromedExchange
                     WebReq.Headers.Add("Cookie", "PHPSESSID=" + sess_id);
                 WebReq.Method = "POST"; //GET/POST/HEAD depending on the request type//
                 WebReq.KeepAlive = true;
+                WebReq.ContentType = "application/x-www-form-urlencoded;charset=utf-8";
                 var bytes = Encoding.ASCII.GetBytes(Data);
                 using (var requestStream = WebReq.GetRequestStream())
                 {
@@ -65,12 +69,15 @@ namespace PromedExchange
         }
         public bool SendPut(string ApiUrl, string Data)
         {
+            if (!Logined) { Login(); }
+
             CookieContainer SessionCookieHolder = new CookieContainer();
             try
             {
                 HttpWebRequest WebReq = (HttpWebRequest)WebRequest.Create(url + ApiUrl);
                 if (sess_id != "")
                     WebReq.Headers.Add("Cookie", "PHPSESSID=" + sess_id);
+                WebReq.ContentType = "application/x-www-form-urlencoded;charset=utf-8";
                 WebReq.Method = "PUT"; //GET/POST/HEAD depending on the request type//
                 WebReq.KeepAlive = true;
                 var bytes = Encoding.ASCII.GetBytes(Data);
@@ -90,6 +97,8 @@ namespace PromedExchange
         }
         public string SendGet(string ApiUrl)
         {
+           
+
             CookieContainer SessionCookieHolder = new CookieContainer(); 
             if (sess_id != "") { 
             Cookie SessionCookie = new Cookie();
@@ -106,6 +115,7 @@ namespace PromedExchange
                 if (sess_id != "")
                     WebReq.Headers.Add("Cookie", "PHPSESSID=" + sess_id);
                 //WebReq.CookieContainer = SessionCookieHolder;
+                WebReq.ContentType = "application/json";
                 WebReq.Method = "GET"; //GET/POST/HEAD depending on the request type//
                 WebReq.KeepAlive = true;
                 HttpWebResponse Resp = (HttpWebResponse)WebReq.GetResponse();
@@ -140,6 +150,9 @@ namespace PromedExchange
 
         public bool Login()
         {
+            try
+            {
+
             if (sess_id == "")
             {
 
@@ -152,6 +165,12 @@ namespace PromedExchange
                     Logined = true;
                 }
                 else { Logined = false; }
+            }
+            }
+            catch (Exception)
+            {
+
+                Logined = false;
             }
             return Logined;
         }
@@ -195,11 +214,13 @@ namespace PromedExchange
         }
         public int GetPerson(Person person)
         {
+            if (!Logined) { Login(); }
+
             int idperson = -1;
             DateTime birthDayPerson = (person.birthDayPerson == null ? DateTime.Now.Date : (DateTime)person.birthDayPerson);
             response = SendGet("/api/Person" + "?Sess_id=" + sess_id +
-                                      "&PersonSurName_SurName=" + person.FamilyPerson +
                                     "&PersonFirName_FirName=" + person.NamePerson +
+                                    "&PersonSurName_SurName=" + person.FamilyPerson +
                                     "&PersonSecName_SecName=" + person.FathersPerson +
                                     "&PersonBirthDay_BirthDay=" + birthDayPerson.ToString("yyyy-MM-dd") +
                                     "&PersonSnils_Snils=" + person.SnilsPerson
@@ -215,24 +236,33 @@ namespace PromedExchange
 
             return idperson;
         }
-        public int savePerson(Person person)
+        public Int64 savePerson(Person person)
         {
-            int idperson = -1; error_msg = "";
+            if (!Logined) { Login(); }
+
+            Int64 idperson = -1; error_msg = "";
             DateTime birthDayPerson = (person.birthDayPerson == null ? DateTime.Now.Date : (DateTime)person.birthDayPerson);
-            response = SendPost("/api/Person","Sess_id=" + sess_id +
-                                      "&PersonSurName_SurName=" + person.FamilyPerson +
+            response = SendPost("/api/Person",//"Sess_id=" + sess_id +
+                                    "PersonSurName_SurName=" + person.FamilyPerson +
                                     "&PersonFirName_FirName=" + person.NamePerson +
                                     "&PersonSecName_SecName=" + person.FathersPerson +
                                     "&PersonBirthDay_BirthDay=" + birthDayPerson.ToString("yyyy-MM-dd") +
-                                    "&PersonSnils_Snils=" + person.SnilsPerson
+                                    "&PersonBirthDay_BirthDay=" + birthDayPerson.ToString("yyyy-MM-dd") +
+                                    "&PersonSnils_Snils=" + person.SnilsPerson +
+                                    "&Person_Sex_id=" + person.Sex_idPerson +
+                                    "&SocStatus_id=" + person.SocStatus_id_Person
                                     );
             jsondoc = JsonDocument.Parse(response);
             JsonElement error_code = jsondoc.RootElement.GetProperty("error_code");
             if (error_code.GetInt32() == 0)
             {
                 JsonElement data = jsondoc.RootElement.GetProperty("data");
-                if (data.GetArrayLength() != 0)
-                    idperson = Convert.ToInt32(data[0].GetProperty("Person_id").GetString());
+                if (data.GetArrayLength() != 0) {
+                    var dataElement = data[0];
+                    string? personstring = Convert.ToString((JsonElement)dataElement.GetProperty("Person_id"));
+                    idperson = Convert.ToInt64(personstring);
+                    
+                }
             }
             else
             {
@@ -246,6 +276,8 @@ namespace PromedExchange
         // Паспорт
          public bool GetPasport(int Person_id)
         {
+            if (!Logined) { Login(); }
+
             response = SendGet("/api/Document?Person_id="+Person_id
                                     );
             jsondoc = JsonDocument.Parse(response);

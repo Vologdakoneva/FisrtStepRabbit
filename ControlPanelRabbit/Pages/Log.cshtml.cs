@@ -1,16 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
-//using PacientService.Entities;
-//using PromedExchange;
 
 namespace ControlPanelRabbit.Pages
 {
-    public class Pacient : PageModel
+    public class Log : PageModel
     {
         private readonly ILogger<PageModel> _logger;
 
-        public Pacient(ILogger<PageModel> logger)
+        public Log(ILogger<PageModel> logger)
         {
             _logger = logger;
         }
@@ -19,18 +17,19 @@ namespace ControlPanelRabbit.Pages
         {
             try
             {
-                string Respose = await GetAsync("http://localhost:39289/api/Pacient");
-                Persons = JsonConvert.DeserializeObject<Person[]>(Respose);
+                string Respose = await GetAsync("http://localhost:39289/api/Error");
+                ErrorPerson = JsonConvert.DeserializeObject<ErrorPerson[]>(Respose);
+                if (Respose == "") { throw new NotImplementedException(); }
             }
             catch (Exception)
             {
-                Person[] personserr = new Person[1];
-                personserr[0] = new Person() { FamilyPerson = "Ошибка сервиса пациенты" , NamePerson="Или сервис недоступен"};
-                Persons = personserr;
+                ErrorPerson[] personserr = new ErrorPerson[1];
+                personserr[0] = new ErrorPerson() { ErrorText = "Ошибка сервиса Лог" };
+                ErrorPerson = personserr;
 
             }
         }
-        public Person[]? Persons;
+        public ErrorPerson[]? ErrorPerson;
 
         public async Task<string> GetAsync(string uri)
         {

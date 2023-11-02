@@ -9,7 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Entities\Person.cs" />
+    <Content Remove="appsettings.Development.json" />
+  
   </ItemGroup>
 
   <ItemGroup>

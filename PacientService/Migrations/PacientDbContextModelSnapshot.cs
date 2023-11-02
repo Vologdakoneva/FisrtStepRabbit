@@ -47,41 +47,7 @@ namespace PacientService.Migrations
                     b.ToTable("ErrorPerson");
                 });
 
-            modelBuilder.Entity("PacientService.Entities.Setups", b =>
-                {
-                    b.Property<int>("IDALL")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDALL"));
-
-                    b.Property<string>("NamenRus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Namenastr")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ValueString")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("IDALL");
-
-                    b.ToTable("Setups");
-
-                    b.HasData(
-                        new
-                        {
-                            IDALL = 1,
-                            NamenRus = "Url для сервиса пациенты",
-                            Namenastr = "URL_PACIENT",
-                            ValueString = "http://localhost:39289/api/Pacient"
-                        });
-                });
-
-            modelBuilder.Entity("PromedExchange.Person", b =>
+            modelBuilder.Entity("PacientService.Entities.Person", b =>
                 {
                     b.Property<int>("IDALL")
                         .ValueGeneratedOnAdd()
@@ -179,6 +145,40 @@ namespace PacientService.Migrations
                     b.HasIndex("PersonLink");
 
                     b.ToTable("Person");
+                });
+
+            modelBuilder.Entity("PacientService.Entities.Setups", b =>
+                {
+                    b.Property<int>("IDALL")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDALL"));
+
+                    b.Property<string>("NamenRus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Namenastr")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ValueString")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("IDALL");
+
+                    b.ToTable("Setups");
+
+                    b.HasData(
+                        new
+                        {
+                            IDALL = 1,
+                            NamenRus = "Url для сервиса пациенты",
+                            Namenastr = "URL_PACIENT",
+                            ValueString = "http://localhost:39289/api/Pacient"
+                        });
                 });
 #pragma warning restore 612, 618
         }

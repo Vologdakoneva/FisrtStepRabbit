@@ -1,5 +1,5 @@
 ﻿using PacientService.Entities;
-using PromedExchange;
+//using PromedExchange;
 
 namespace PacientService.Repositories.Interfaces
 {

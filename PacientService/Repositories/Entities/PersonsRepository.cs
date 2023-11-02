@@ -2,7 +2,7 @@
 using PacientService.Data;
 using PacientService.Entities;
 using PacientService.Repositories.Interfaces;
-using PromedExchange;
+//using PromedExchange;
 
 namespace PacientService.Repositories.Entities
 {
@@ -26,7 +26,7 @@ namespace PacientService.Repositories.Entities
 
         public IQueryable<Person> GetPersons()
         {
-            return context.Person;
+            return (IQueryable<Person>)context.Person;
         }
 
         public void SavePersons(Person entity)

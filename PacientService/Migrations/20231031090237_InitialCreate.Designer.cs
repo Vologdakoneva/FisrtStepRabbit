@@ -12,8 +12,8 @@ using PacientService.Data;
 namespace PacientService.Migrations
 {
     [DbContext(typeof(PacientDbContext))]
-    [Migration("20231022073900_2210")]
-    partial class _2210
+    [Migration("20231031090237_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,6 +35,9 @@ namespace PacientService.Migrations
                     b.Property<DateTime>("DataError")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("ErrorSource")
+                        .HasColumnType("text");
+
                     b.Property<string>("ErrorText")
                         .HasColumnType("text");
 
@@ -46,41 +49,7 @@ namespace PacientService.Migrations
                     b.ToTable("ErrorPerson");
                 });
 
-            modelBuilder.Entity("PacientService.Entities.Setups", b =>
-                {
-                    b.Property<int>("IDALL")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDALL"));
-
-                    b.Property<string>("NamenRus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Namenastr")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ValueString")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("IDALL");
-
-                    b.ToTable("Setups");
-
-                    b.HasData(
-                        new
-                        {
-                            IDALL = 1,
-                            NamenRus = "Url для сервиса пациенты",
-                            Namenastr = "URL_PACIENT",
-                            ValueString = "http://localhost:39289/api/Pacient"
-                        });
-                });
-
-            modelBuilder.Entity("PromedExchange.Person", b =>
+            modelBuilder.Entity("PacientService.Entities.Person", b =>
                 {
                     b.Property<int>("IDALL")
                         .ValueGeneratedOnAdd()
@@ -178,6 +147,40 @@ namespace PacientService.Migrations
                     b.HasIndex("PersonLink");
 
                     b.ToTable("Person");
+                });
+
+            modelBuilder.Entity("PacientService.Entities.Setups", b =>
+                {
+                    b.Property<int>("IDALL")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDALL"));
+
+                    b.Property<string>("NamenRus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Namenastr")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ValueString")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("IDALL");
+
+                    b.ToTable("Setups");
+
+                    b.HasData(
+                        new
+                        {
+                            IDALL = 1,
+                            NamenRus = "Url для сервиса пациенты",
+                            Namenastr = "URL_PACIENT",
+                            ValueString = "http://localhost:39289/api/Pacient"
+                        });
                 });
 #pragma warning restore 612, 618
         }

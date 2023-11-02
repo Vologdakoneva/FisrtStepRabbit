@@ -7,9 +7,6 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["ControlPanelRabbit/ControlPanelRabbit.csproj", "ControlPanelRabbit/"]
-COPY ["PacientService/PacientService.csproj", "PacientService/"]
-COPY ["Plain.RabbitMQ/Plain.RabbitMQ.csproj", "Plain.RabbitMQ/"]
-COPY ["PromedExchange/PromedExchange.csproj", "PromedExchange/"]
 RUN dotnet restore "ControlPanelRabbit/ControlPanelRabbit.csproj"
 COPY . .
 WORKDIR "/src/ControlPanelRabbit"

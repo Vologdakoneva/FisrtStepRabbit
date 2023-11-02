@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PacientService.Entities;
 using PacientService.Repositories.Interfaces;
-using PromedExchange;
+//using PromedExchange;
 
 namespace PacientService.Data
 {
@@ -36,8 +36,10 @@ namespace PacientService.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // // // "Server = 127.0.0.1; Port = 5432; Database = postgres; User Id = postgres; Password = postgres; Pooling = true"
+
+            //optionsBuilder.UseNpgsql(_configuration.GetConnectionString("PostgreSQL"));
+            optionsBuilder.UseNpgsql("Server=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=postgres;Pooling=true");
             
-            optionsBuilder.UseNpgsql(_configuration.GetConnectionString("PostgreSQL"));
         }
 
 

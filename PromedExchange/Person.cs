@@ -71,7 +71,7 @@ namespace PromedExchange
         public string? NomDoc { get; set; } = string.Empty;
 
         [Display(Name = "Дата выдачи докум.")]
-        public DateTime? DataDoc { get; set; } = null;
+        public DateTime? DataDoc { get; set; } = DateTime.Now.Date;
 
         [Display(Name = "Кем выдан докум.")]
         public string? KemVidan { get; set; } = string.Empty;

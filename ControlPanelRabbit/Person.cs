@@ -1,10 +1,9 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Policy;
 using System.Xml.Linq;
 
-namespace PacientService.Entities
+namespace ControlPanelRabbit
 {
     [Index(nameof(PersonLink))]
     public class Person
