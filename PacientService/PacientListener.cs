@@ -39,9 +39,26 @@ namespace PacientService
 
         private bool Subscribe(string message, IDictionary<string, object> header)
         {
-            PacientService.Entities.Person response = JsonConvert.DeserializeObject<PacientService.Entities.Person>(message);
+            Console.WriteLine(" Сообщение получено " + "\n");
+            
+
+            PacientService.Entities.Person response;
+            try
+            {
+                response = JsonConvert.DeserializeObject<PacientService.Entities.Person>(message);
+            }
+            catch (Exception)
+            {
+
+                Console.WriteLine(" Сообщение ошибка данных " + "\n");
+                return true;
+            }
             if (response != null)
-                using (var scope = serviceScopeFactory.CreateScope())
+                Console.WriteLine(" Сообщение начата обработка " + "\n");
+            try
+            {
+
+            using (var scope = serviceScopeFactory.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<PacientDbContext>();
 
@@ -88,7 +105,7 @@ namespace PacientService
                         var entityProperties = person.GetType().GetProperties();
                         dbContext.Entry(person).State = EntityState.Modified;
                         dbContext.Person.Attach(person);
-
+                        response.DateChangePerson = DateTime.Now;
                         foreach (var ep in entityProperties)
                         {
                             if (ep.Name != "IDALL") {
@@ -103,8 +120,25 @@ namespace PacientService
                     }
 
 
+                    Console.WriteLine(" SaveChanges " + "\n");
 
+                    Console.WriteLine(" GetPerson " + "\n");
                     Int64 idperson = promed.GetPerson(ConvertPerson(response));  ////promed.SendPut("","");
+
+
+                    if (idperson == -10)
+                    {
+                        Console.WriteLine(" Login Failed Promed " + "\n");
+                        PacientService.Entities.ErrorPerson errorPerson = new PacientService.Entities.ErrorPerson();
+                        errorPerson.PersonLink = response.PersonLink;
+                        errorPerson.ErrorText = "Логин не успешный" ;
+                        errorPerson.ErrorSource = "Промед";
+                        dbContext.ErrorPerson.Add(errorPerson);
+                        dbContext.SaveChanges();
+                        return  true;
+
+                    }
+
                     // Добавить пациента
                     if (idperson == -1) {
                         idperson = promed.savePerson(ConvertPerson(response));
@@ -143,6 +177,14 @@ namespace PacientService
 
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(" Сообщение error " + ex.Message + "\n");
+
+            }
+
+            Console.WriteLine(" Сообщение обработано успешно " + DateTime.Now.ToString() + "\n");
 
             return true;
         }

@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Plain.RabbitMQ;
 using RabbitMQ.Client;
 using System.Reflection.PortableExecutable;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Web;
 using System.Xml.Linq;
 
 
@@ -31,12 +35,12 @@ namespace ControlPanelRabbit.Pages.Api
         public IEnumerable<string> Get(
             [FromQuery(Name = "PersonLink")] string PersonLink,
             [FromQuery(Name = "FamilyPerson")] string FamilyPerson,
-            [FromQuery(Name = "NamePerson")] string? NamePerson,
-            [FromQuery(Name = "FathersPerson")] string? FathersPerson,
+            [FromQuery(Name = "NamePerson")] string NamePerson,
+            [FromQuery(Name = "FathersPerson")] string FathersPerson,
             [FromQuery(Name = "birthDayPerson")] string? birthDayPerson,
             [FromQuery(Name = "Sex_idPerson")] int? Sex_idPerson,
             [FromQuery(Name = "Sex_Person")] string? Sex_Person,
-            [FromQuery(Name = "SnilsPerson")] string? SnilsPerson,
+            [FromQuery(Name = "SnilsPerson")] string SnilsPerson,
             [FromQuery(Name = "PhonePerson")] string? PhonePerson,
             [FromQuery(Name = "Inn_Person")] string? Inn_Person,
             [FromQuery(Name = "SocStatus_Person")] string? SocStatus_Person,
@@ -51,17 +55,35 @@ namespace ControlPanelRabbit.Pages.Api
             [FromQuery(Name = "PolisSeria")] string? PolisSeria,
             [FromQuery(Name = "PolisNomer")] string? PolisNomer,
             [FromQuery(Name = "IsVrach")] bool? IsVrach
+
             )
         {
+            if (SeriaDoc != null)
+                SeriaDoc = SeriaDoc.Replace("_", " ");
+            if (NomDoc != null)
+                NomDoc = NomDoc.Replace("_", " ");
+            if (KemVidan != null)
+                KemVidan = KemVidan.Replace("_", " ");
+            if (Foms != null)
+                Foms = Foms.Replace("_", " ");
+            if (PolisSeria != null)
+                PolisSeria = PolisSeria.Replace("_", " ");
+            if (PolisNomer != null)
+                PolisNomer = PolisNomer.Replace("_", " ");
+            if (SnilsPerson != null)
+                SnilsPerson = SnilsPerson.Replace("_", " ");
+            string urlget = HttpUtility.UrlDecode(Request.QueryString.Value == null ? "" : Request.QueryString.Value, Encoding.UTF8);
+            ////HttpUtility.ParseQueryString()
             Person person = new Person();
             Guid gPersonLink;
-            if (Guid.TryParse(PersonLink, out gPersonLink)) { 
+            if (Guid.TryParse(PersonLink, out gPersonLink))
+            {
                 person.PersonLink = gPersonLink;
                 person.FamilyPerson = FamilyPerson;
                 person.NamePerson = NamePerson;
                 person.FathersPerson = FathersPerson;
-                if (birthDayPerson!="")
-                person.birthDayPerson = Convert.ToDateTime( birthDayPerson);
+                if (birthDayPerson != "")
+                    person.birthDayPerson = Convert.ToDateTime(birthDayPerson);
                 person.SnilsPerson = SnilsPerson;
                 person.Sex_idPerson = Sex_idPerson;
                 person.Sex_Person = Sex_Person;
@@ -72,7 +94,7 @@ namespace ControlPanelRabbit.Pages.Api
                 person.SeriaDoc = SeriaDoc;
                 person.NomDoc = NomDoc;
                 if (DataDoc != "")
-                    person.DataDoc = Convert.ToDateTime( DataDoc );
+                    person.DataDoc = Convert.ToDateTime(DataDoc);
                 person.KemVidan = KemVidan;
                 person.FomsName = Foms;
                 person.FomsKod = FomsKod;
@@ -87,17 +109,20 @@ namespace ControlPanelRabbit.Pages.Api
                 publisher.Publish(personString, "pacientkey.update", null);
 
 
-            }
+                //}
+                Console.WriteLine(DateTime.Now.ToString() + " Сообщение  " + urlget + "\n");
 
-            return new string[] { "Оработка", "Сообщение передано." };
+                return new string[] { "Оработка", "Сообщение передано." };
+            }
+            return new string[] { "Оработка", "не корректная информаци." };
         }
 
         // GET api/<RabbitPusher>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+        //[HttpGet("{id}")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
 
         // POST api/<RabbitPusher>
         [HttpPost]

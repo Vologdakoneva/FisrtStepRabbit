@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PacientService.Data;
@@ -11,9 +12,10 @@ using PacientService.Data;
 namespace PacientService.Migrations
 {
     [DbContext(typeof(PacientDbContext))]
-    partial class PacientDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231106055632_int64edit")]
+    partial class int64edit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

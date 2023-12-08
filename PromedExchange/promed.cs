@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -167,10 +168,11 @@ namespace PromedExchange
                 else { Logined = false; }
             }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 Logined = false;
+                Console.WriteLine(" Логин failed " + ex.Message);
             }
             return Logined;
         }
@@ -212,11 +214,14 @@ namespace PromedExchange
 
             return await Task.FromResult(true);
         }
-        public int GetPerson(Person person)
+        public Int64 GetPerson(Person person)
         {
             if (!Logined) { Login(); }
-
-            int idperson = -1;
+            if (!Logined) { 
+                Console.WriteLine(" Логин promed failed " );
+                return -10;
+            }
+            Int64 idperson = -1;
             DateTime birthDayPerson = (person.birthDayPerson == null ? DateTime.Now.Date : (DateTime)person.birthDayPerson);
             response = SendGet("/api/Person" + "?Sess_id=" + sess_id +
                                     "&PersonFirName_FirName=" + person.NamePerson +
@@ -230,8 +235,11 @@ namespace PromedExchange
             if (error_code.GetInt32() == 0)
             {
                 JsonElement data = jsondoc.RootElement.GetProperty("data");
-                if (data.GetArrayLength()!=0)
-                idperson = Convert.ToInt32( data[0].GetProperty("Person_id").GetString());
+                if (data.GetArrayLength() != 0) {
+                    Console.WriteLine(" Promed Get Person successfully ");
+                    string idString = data[0].GetProperty("Person_id").GetString();
+                idperson = Convert.ToInt64(idString);
+                }
             }
 
             return idperson;
@@ -267,7 +275,7 @@ namespace PromedExchange
             else
             {
                 JsonElement error_message = jsondoc.RootElement.GetProperty("error_msg");
-                error_msg = error_message.GetString();
+                error_msg = error_message.GetString() + " " + person.FamilyPerson + " " + person.NamePerson +" " + person.FathersPerson;
             }
 
             return idperson;

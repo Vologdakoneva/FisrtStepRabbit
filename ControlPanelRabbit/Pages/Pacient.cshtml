@@ -1,24 +1,6 @@
 ﻿@page
 @using NonFactors.Mvc.Grid;
 @model Pacient
-<script type="text/javascript">
-    //alert('sd');
-    //debugger;
-    //window.onload = onloaded;
-    //function onloaded() {
-        const grid = document.querySelector(".mvc-grid");
-        //debugger;
-        // alert('sd');
-        // Triggered when grid's row is clicked. It's recommended to use event delegation in ajax scenarios.
-        //document.addEventListener("rowclick", e => {
-            //e.detail.data - clicked row's data from columns.
-            //e.detail.grid - grid's instance.
-       // debugger;
-         //   alert('sd');
-            //e.detail.originalEvent - original tr click event which triggered the rowclick.
-        });
-    //}
-</script>
 
 @{
     ViewData["Title"] = "Пациенты";
@@ -41,7 +23,8 @@
 
 
 @if (Model != null)
-{ 
+{
+    <div class="mvc-grid mvc-grid-excel-mode" data-name="" data-id="0">
 @(Html
     .Grid(Model.Persons)
     .Build(columns =>
@@ -59,6 +42,7 @@
         columns.Add(model => model.SnilsPerson).Titled("Снилс");
         columns.Add(model => model.IdPromedPerson).Titled("Id в промед");
         columns.Add(model => model.PersonLink).Titled("Guid");
+        columns.Add(model => model.DataCreatePerson).Titled("Создано");
         })
     .Using(GridFilterMode.Header)
     .Empty("Нет данных")
@@ -66,20 +50,13 @@
     .Sortable()
     .Pageable()
     .Id("GridPacient")
-@*    .Pageable(pager =>
-        {
-            //pager.PageSizes = new Dictionary<Int32, String> { { 0, "Все" }, { 2, "2" }, { 4, "4" } };
-            pager.ShowPageSizes = true;
-            pager.PagesToDisplay = 3;
-            pager.CurrentPage = 1;
-            pager.RowsPerPage = 5;
-        })
-*@    .Using(GridFilterMode.Row)
+    .Using(GridFilterMode.Row)
         .Css("css-classes")
         .AppendCss("table-hover")
         .Attributed(new { data_type = "individuals" })
         .RowAttributed(model => new { @class = model.successfully == true ? "working" : null, data_id = model.IDALL })
 )
+    </div>
 
 @*    <button type="button"
             class="btn btn-primary"

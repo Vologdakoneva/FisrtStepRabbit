@@ -33,7 +33,7 @@ namespace ControlPanelRabbit
         public DateTime DateChangePerson { get; set; } = DateTime.Now;
 
         [Display(Name = "ID в промеде")]
-        public int? IdPromedPerson { get; set; } = 0;
+        public Int64? IdPromedPerson { get; set; } = 0;
 
         [Display(Name = "ID пол")]
         public int? Sex_idPerson { get; set; } = 0;

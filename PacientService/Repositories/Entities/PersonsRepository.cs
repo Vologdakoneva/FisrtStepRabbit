@@ -26,7 +26,7 @@ namespace PacientService.Repositories.Entities
 
         public IQueryable<Person> GetPersons()
         {
-            return (IQueryable<Person>)context.Person;
+            return (IQueryable<Person>)context.Person.OrderByDescending(p=>p.DateChangePerson);
         }
 
         public void SavePersons(Person entity)

@@ -38,7 +38,8 @@ namespace PacientService.Data
             // // // "Server = 127.0.0.1; Port = 5432; Database = postgres; User Id = postgres; Password = postgres; Pooling = true"
 
             //optionsBuilder.UseNpgsql(_configuration.GetConnectionString("PostgreSQL"));
-            optionsBuilder.UseNpgsql("Server=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=postgres;Pooling=true");
+            // "Server=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=postgres;Pooling=true"
+            optionsBuilder.UseNpgsql(_configuration.GetConnectionString("PostgreSQL"));
             
         }
 

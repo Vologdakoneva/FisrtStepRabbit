@@ -15,7 +15,11 @@ namespace ControlPanelRabbit.Pages
 
         public void OnGet()
         {
-           
+
+        }
+        public void OnPost()
+        {
+
         }
     }
 }

@@ -26,7 +26,7 @@ namespace PacientService.Repositories.Entities
 
         public IQueryable<ErrorPerson> GetErrors()
         {
-            return context.ErrorPerson; 
+            return context.ErrorPerson.OrderByDescending(o => o.DataError); 
         }
 
         public void SaveGetError(ErrorPerson entity)
