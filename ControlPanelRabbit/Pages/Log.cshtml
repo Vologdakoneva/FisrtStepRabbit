@@ -60,73 +60,18 @@
     .Empty("Нет данных")
     .Filterable()
     .Sortable()
-    .Pageable()
-    .Id("GridPacient")
+                                                        .Pageable(pager =>
+                                                    {
+                                                        pager.PageSizes = new Dictionary<Int32, String> { { 0, "All" }, { 5, "5" }, { 10, "10" }, { 50, "50" } };
+                                                        pager.ShowPageSizes = false;
+                                                        pager.PagesToDisplay = 4;
+                                                        pager.CurrentPage = 1;
+                                                        pager.RowsPerPage = 10;
+                                                    })
 )
-@*    <button type="button"
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#GFG">
-        Show Modal
-    </button>
-    <a href="javascript:void" data-bs-toggle="modal" data-bs-target="#GFG"> Лог </a>
 
-*@    <div class="modal fade" id="GFG">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        Modal
-                    </h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal">
-                    </button>
-                </div>
-@*                <div class="modal-body">
-                    <p>I am a Modal</p>
-                    <p>
-                        Bootstrap Modal Via Data Attributes 
-                    </p>
-                    @(Html
-                        .Grid(Model.Persons)
-                        .Build(columns =>
-                        {
-                            columns.Add(model => model.successfully).Titled("Успешно")
-                            .RenderedAs(model => model.successfully == true ?
-                            Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' checked />")
-                            : Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' />"));
-                            columns.Add(model => model.FamilyPerson).Titled("Фамилия");
-                            columns.Add(model => model.NamePerson).Titled("Имя");
-                            columns.Add(model => model.FathersPerson).Titled("Отчество");
-
-                            columns.Add(model => model.birthDayPerson).Titled("Дата рождения").Formatted("{0:d}");
-                            columns.Add(model => model.Sex_Person).Titled("Пол");
-                            columns.Add(model => model.SnilsPerson).Titled("Снилс");
-                            columns.Add(model => model.IdPromedPerson).Titled("Id в промед");
-                        })
-                        .Using(GridFilterMode.Header)
-                        .Empty("Нет данных")
-                        .Filterable()
-                        .Sortable()
-                        .Pageable()
-                        .Id("GridPacient")
-                        .Using(GridFilterMode.Row)
-                        .Css("css-classes")
-                        .AppendCss("table-hover")
-                        .Attributed(new { data_type = "individuals" })
-                        .RowAttributed(model => new { @class = model.successfully == true ? "working" : null, data_id = model.IDALL })
-                        )
-                </div>
-*@                <div class="modal-footer">
-                    <button type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal">
-                        Close
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 }
-<script src="~/js/mvc-grid/mvc-grid_rus.js"></script>
+<script type="text/javascript" src="~/js/mvc-grid/mvc-grid_rus.js"></script>
+<script type="text/javascript">
+    document.querySelectorAll(".mvc-grid").forEach(element => new MvcGrid(element));
+</script>
