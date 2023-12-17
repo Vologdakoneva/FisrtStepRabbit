@@ -19,12 +19,21 @@
 <p>Перечень пациентов и состояние передачи.</p>
 @if (Model == null)
 {
-    <label>"Загрузка"</label>
+    <label>"Загрузка" +
+        Model.Persons.count()
+    </label>
 }
 
 
 @if (Model != null)
 {
+    <label>
+        Всего передано 
+        @Model.Persons.Count()
+        успешно @Model.Persons.Where(p => p.successfully).Count().
+        С ошибками (см. лог) @Model.Persons.Where(p => !p.successfully).Count()
+
+    </label>
 
     @(
     Html.Grid(Model.Persons).Build(columns =>
@@ -33,7 +42,11 @@
                                                             .RenderedAs(model => model.successfully == true ?
                                                                 Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' checked />")
                                                                    : Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' />"));
-                                                    columns.Add(model => model.FamilyPerson).Titled("Фамилия");
+                                                        columns.Add(model => model.IsVrach).Titled("Врач")
+                                                                .RenderedAs(model => model.IsVrach == true ?
+                                                                    Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' checked />")
+                                                                       : Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' />"));
+                                                        columns.Add(model => model.FamilyPerson).Titled("Фамилия");
                                                     columns.Add(model => model.NamePerson).Titled("Имя");
                                                     columns.Add(model => model.FathersPerson).Titled("Отчество");
                                                     columns.Add(model => model.DateChangePerson).Titled("Изменено");

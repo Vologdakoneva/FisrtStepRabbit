@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlPanelRabbit", "Contr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PromedExchange", "PromedExchange\PromedExchange.csproj", "{C3AC53C5-FD5A-41DB-9D5A-191A53810977}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentService", "DocumentService\DocumentService.csproj", "{C6C1051B-F811-440F-B89A-C96884AE983A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,14 @@ Global
 		{C3AC53C5-FD5A-41DB-9D5A-191A53810977}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C3AC53C5-FD5A-41DB-9D5A-191A53810977}.Release|x64.ActiveCfg = Release|Any CPU
 		{C3AC53C5-FD5A-41DB-9D5A-191A53810977}.Release|x64.Build.0 = Release|Any CPU
+		{C6C1051B-F811-440F-B89A-C96884AE983A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6C1051B-F811-440F-B89A-C96884AE983A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6C1051B-F811-440F-B89A-C96884AE983A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C6C1051B-F811-440F-B89A-C96884AE983A}.Debug|x64.Build.0 = Debug|Any CPU
+		{C6C1051B-F811-440F-B89A-C96884AE983A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6C1051B-F811-440F-B89A-C96884AE983A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6C1051B-F811-440F-B89A-C96884AE983A}.Release|x64.ActiveCfg = Release|Any CPU
+		{C6C1051B-F811-440F-B89A-C96884AE983A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -224,9 +224,9 @@ namespace PromedExchange
             Int64 idperson = -1;
             DateTime birthDayPerson = (person.birthDayPerson == null ? DateTime.Now.Date : (DateTime)person.birthDayPerson);
             response = SendGet("/api/Person" + "?Sess_id=" + sess_id +
-                                    "&PersonFirName_FirName=" + person.NamePerson +
-                                    "&PersonSurName_SurName=" + person.FamilyPerson +
-                                    "&PersonSecName_SecName=" + person.FathersPerson +
+                                    //"&PersonFirName_FirName=" + person.NamePerson +
+                                    //"&PersonSurName_SurName=" + person.FamilyPerson +
+                                    //"&PersonSecName_SecName=" + person.FathersPerson +
                                     "&PersonBirthDay_BirthDay=" + birthDayPerson.ToString("yyyy-MM-dd") +
                                     "&PersonSnils_Snils=" + person.SnilsPerson
                                     );
@@ -238,7 +238,27 @@ namespace PromedExchange
                 if (data.GetArrayLength() != 0) {
                     Console.WriteLine(" Promed Get Person successfully ");
                     string idString = data[0].GetProperty("Person_id").GetString();
-                idperson = Convert.ToInt64(idString);
+                    string Family = data[0].GetProperty("PersonSurName_SurName").GetString();
+                    string NamePerson = data[0].GetProperty("PersonFirName_FirName").GetString();
+                    string Fathers = data[0].GetProperty("PersonSecName_SecName").GetString();
+                    if (Convert.ToInt64(idString) > 0 && (Family != person.FamilyPerson ||
+                                           NamePerson != person.NamePerson ||
+                                           Fathers != person.FathersPerson)
+                        ) { 
+                              if (  !SendPut("/api/Person",  "Sess_id=" + sess_id +
+                                    "&Person_id=" + Convert.ToInt64( idString ) +
+                                    "&PersonFirName_FirName=" + person.NamePerson +
+                                    "&PersonSurName_SurName=" + person.FamilyPerson +
+                                    "&PersonSecName_SecName=" + person.FathersPerson +
+                                    "&PersonBirthDay_BirthDay=" + birthDayPerson.ToString("yyyy-MM-dd") +
+                                    "&PersonSnils_Snils=" + person.SnilsPerson
+                                    ) )
+                                {
+                            error_msg = "Ошибка модифицирования. ";
+                        }
+
+                    }
+                    idperson = Convert.ToInt64(idString);
                 }
             }
 

@@ -108,7 +108,7 @@ namespace PacientService
                         response.DateChangePerson = DateTime.Now;
                         foreach (var ep in entityProperties)
                         {
-                            if (ep.Name != "IDALL") {
+                            if (ep.Name != "IDALL" && ep.Name != "DataCreatePerson") {
                                 dbContext.Entry(person).Property(ep.Name).IsModified = true;
                                 dbContext.Entry(person).Property(ep.Name).CurrentValue = dbContext.Entry(response).Property(ep.Name).CurrentValue;
                             }
