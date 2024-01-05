@@ -20,7 +20,10 @@ namespace DocumentService.Repositories.Entities
 
         public DocAnaliz GetDocAnalizEntity(Guid entity)
         {
-            throw new NotImplementedException();
+            DocAnaliz? docAnaliz = this.context.DocAnaliz.Where(p => p.DocLink == entity).FirstOrDefault();
+            if (docAnaliz == null) { return new DocAnaliz(); }
+            else
+                return docAnaliz;
         }
 
         public IQueryable<DocAnaliz> GetDocsAnaliz()
@@ -30,7 +33,11 @@ namespace DocumentService.Repositories.Entities
 
         public void SavePersons(DocAnaliz entity)
         {
-            throw new NotImplementedException();
+            if (entity.IDALL == default)
+                context.Entry(entity).State = EntityState.Added;
+            else
+                context.Entry(entity).State = EntityState.Modified;
+            context.SaveChanges();
         }
     }
 }

@@ -39,6 +39,10 @@ namespace DocumentService.Migrations
                     b.Property<Guid>("DocLink")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Errors")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Fio")
                         .IsRequired()
                         .HasColumnType("text");
@@ -61,9 +65,20 @@ namespace DocumentService.Migrations
                     b.Property<int>("IdFio")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Items")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("NomDoc")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("Recomedation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("successfully")
+                        .HasColumnType("boolean");
 
                     b.HasKey("IDALL");
 

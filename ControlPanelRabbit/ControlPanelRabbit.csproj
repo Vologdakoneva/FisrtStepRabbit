@@ -16,14 +16,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Pages\~Analiz.cshtml.cs" />
     <Compile Remove="Person .cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Remove="appsettings.Development.json" />
+    <Content Remove="Pages\~Analiz.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DevExtreme.AspNet.Core" Version="20.1.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.23" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.23">
       <PrivateAssets>all</PrivateAssets>
@@ -49,6 +52,14 @@
     <Content Update="wwwroot\Images\panel.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Analiz.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Analiz.cshtml" />
   </ItemGroup>
 
 </Project>

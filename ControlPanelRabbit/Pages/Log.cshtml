@@ -1,24 +1,25 @@
 ﻿@page
 @using NonFactors.Mvc.Grid;
+@using DevExtreme.AspNet.Mvc;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 @model Log
-<script type="text/javascript">
-    //alert('sd');
-    //debugger;
-    //window.onload = onloaded;
-    //function onloaded() {
-        const grid = document.querySelector(".mvc-grid");
-        //debugger;
-        // alert('sd');
-        // Triggered when grid's row is clicked. It's recommended to use event delegation in ajax scenarios.
-        //document.addEventListener("rowclick", e => {
-            //e.detail.data - clicked row's data from columns.
-            //e.detail.grid - grid's instance.
-       // debugger;
-         //   alert('sd');
-            //e.detail.originalEvent - original tr click event which triggered the rowclick.
-        });
-    //}
-</script>
+
+<link href="~/css/css/dx.common.css" rel="stylesheet" />
+<link href="~/css/css/dx.material.blue.light.compact.css" rel="stylesheet" />
+<link href="~/css/css/dx.material.blue.light.compact.css" rel="stylesheet" />
+
+<script src="~/js/devextreme/jquery.js"></script>
+<script src="~/js/devextreme/dx.all.js"></script>
+@*<script src="~/js/devextreme/dx.viz-web.js"></script>*@
+
+<script src="~/js/devextreme/aspnet/dx.aspnet.mvc.js"></script>
+<script src="~/js/devextreme/aspnet/dx.aspnet.data.js"></script>
+<script src="~/js/devextreme/localization/dx.messages.ru.js"></script>
+<script src="~/js/devextreme/globalize.js"></script>
+
+
+
+
 
 @{
     ViewData["Title"] = "Лог";
@@ -34,6 +35,32 @@
 <h1>@ViewData["Title"]</h1>
 
 <p>Состояние обмена.</p>
+
+
+@(Html.DevExtreme().DataGrid()
+    .ID("gridContainer")
+    .ShowBorders(true)
+    .DataSource(Model.ErrorPerson)
+    .KeyExpr("IDALL")
+    .ShowBorders(true)
+    .RemoteOperations(false)
+    .AllowColumnReordering(true)
+    .RowAlternationEnabled(true)
+    .FilterPanel(f => f.Visible(true))
+    .HeaderFilter(h => h.Visible(true))
+     .FilterRow(filterRow => filterRow
+            .Visible(true)
+            .ApplyFilter(GridApplyFilterMode.Auto)
+        )
+    .Columns(c =>
+    {
+        c.Add().DataField("ErrorSource").Width(110).Caption("Источник");
+        c.Add().DataField("IDALL").DataType(GridColumnDataType.Number).Width(110);
+        c.Add().DataField("PersonLink");
+        c.Add().DataField("ErrorText");
+    })
+)
+
 @if (Model == null)
 {
      <label>"Загрузка"</label>
@@ -42,15 +69,11 @@
 
 @if (Model != null)
 { 
-@(Html
+@*@(Html
     .Grid(Model.ErrorPerson)
     .Build(columns =>
     {
-@*        columns.Add(model => model.successfully).Titled("Успешно")
-                .RenderedAs(model => model.successfully == true ?
-                    Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' checked />")
-                       : Html.Raw("<input type='checkbox' onclick='return false' name='Input.SelectedAccessRightsIds' value='" + model.IDALL + "' />"));
-*@        columns.Add(model => model.ErrorSource).Titled("Источник");
+        columns.Add(model => model.ErrorSource).Titled("Источник");
         columns.Add(model => model.ErrorText).Titled("Ошибка");
         columns.Add(model => model.DataError).Titled("Дата");
         columns.Add(model => model.PersonLink).Titled("");
@@ -68,9 +91,34 @@
                                                         pager.CurrentPage = 1;
                                                         pager.RowsPerPage = 10;
                                                     })
-)
+)*@
 
 }
+
+
+<script>
+    var locales = [
+        { name: "Русский", value: "ru" }
+    ];
+    //debugger;
+    var locale = getLocale();
+    DevExpress.localization.locale(locale);
+
+    function changeLocale(data) {
+        setLocale(data.value);
+        document.location.reload();
+    }
+
+    function getLocale() {
+        var locale = sessionStorage.getItem("locale");
+        return locale != null ? locale : "ru";
+    }
+
+    function setLocale(locale) {
+        sessionStorage.setItem("locale", locale);
+    }
+</script>
+
 <script type="text/javascript" src="~/js/mvc-grid/mvc-grid_rus.js"></script>
 <script type="text/javascript">
     document.querySelectorAll(".mvc-grid").forEach(element => new MvcGrid(element));

@@ -1,0 +1,52 @@
+﻿@page
+@using DevExtreme.AspNet.Mvc;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+
+@model Analiz
+
+
+<link href="~/css/css/dx.common.css" rel="stylesheet" />
+<link href="~/css/css/dx.material.blue.light.compact.css" rel="stylesheet" />
+<link href="~/css/css/dx.material.blue.light.compact.css" rel="stylesheet" />
+
+<script src="~/js/devextreme/jquery.js"></script>
+<script src="~/js/devextreme/dx.all.js"></script>
+
+<script src="~/js/devextreme/aspnet/dx.aspnet.mvc.js"></script>
+<script src="~/js/devextreme/aspnet/dx.aspnet.data.js"></script>
+<script src="~/js/devextreme/localization/dx.messages.ru.js"></script>
+<script src="~/js/devextreme/globalize.js"></script>
+
+@{
+    ViewData["Title"] = "Направления на анализ";
+}
+<h1>@ViewData["Title"]</h1>
+
+@(Html.DevExtreme().DataGrid()
+    .ID("gridContainer")
+    .ShowBorders(true)
+    .DataSource(Model.docAnaliz)
+    .KeyExpr("IDALL")
+    .ShowBorders(true)
+    .RemoteOperations(false)
+    .AllowColumnReordering(true)
+    .RowAlternationEnabled(true)
+    .FilterPanel(f => f.Visible(true))
+    .HeaderFilter(h => h.Visible(true))
+     .FilterRow(filterRow => filterRow
+            .Visible(true)
+            .ApplyFilter(GridApplyFilterMode.Auto)
+        )
+    .Columns(c =>
+    {
+        c.Add().DataField("successfully").Width(80).Caption("Успешно");
+        c.Add().DataField("NomDoc").Caption("Ном.документа");
+        c.Add().DataField("Datadoc").Caption("Дата.документа");
+        c.Add().DataField("Fio").Caption("ФИО Пациента");
+        c.Add().DataField("FioDoctor").Caption("ФИО Врача");
+        c.Add().DataField("Databiomaterial").Caption("Дата пробы");
+    })
+)
+
+@{
+}

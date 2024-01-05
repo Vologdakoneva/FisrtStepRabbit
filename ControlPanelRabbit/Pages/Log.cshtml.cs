@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using NuGet.Protocol;
+
 
 namespace ControlPanelRabbit.Pages
 {
@@ -13,11 +15,11 @@ namespace ControlPanelRabbit.Pages
             _logger = logger;
         }
 
-        public async Task OnGetAsync()
+        public void OnGet()
         {
             try
             {
-                string Respose = await GetAsync("http://localhost:39289/api/Error");
+                string Respose = GetAsync("http://localhost:39289/api/Error");
                 ErrorPerson = JsonConvert.DeserializeObject<ErrorPerson[]>(Respose);
                 if (Respose == "") { throw new NotImplementedException(); }
             }
@@ -30,13 +32,25 @@ namespace ControlPanelRabbit.Pages
             }
         }
         public ErrorPerson[]? ErrorPerson;
-
-        public async Task<string> GetAsync(string uri)
+        public string GetAsync(string uri)
         {
-            HttpClient _client = new HttpClient();
-            using HttpResponseMessage response = await _client.GetAsync(uri);
+            string responseString = "";
+            using (var client = new HttpClient())
+            {
+                var response = client.GetAsync(uri).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = response.Content;
+                    // by calling .Result you are synchronously reading the result
+                    responseString = responseContent.ReadAsStringAsync().Result;
+                    Console.WriteLine(responseString);
+                }
+            }
 
-            return await response.Content.ReadAsStringAsync();
+            //HttpClient _client = new HttpClient();
+            //using HttpResponseMessage response = _client.Send( new HttpRequestMessage(HttpMethod.Get, uri));
+
+            return responseString;
         }
     }
 }

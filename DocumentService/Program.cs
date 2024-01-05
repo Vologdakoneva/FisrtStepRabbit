@@ -3,6 +3,9 @@ using DocumentService.Repositories.Entities;
 using DocumentService.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using Plain.RabbitMQ;
+using RabbitMQ.Client;
+using DocumentService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,21 @@ builder.Services.AddSwaggerGen();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddDbContext<DocumentDbContext>();
+
+string connString = builder.Configuration.GetConnectionString("RabbitMQ");
+
+builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider(connString));
+builder.Services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
+    "promed-exchange",
+    "docs-queue",
+    "NaAnaliz.*",
+ ExchangeType.Topic));
+builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(),
+    "promed-exchange",
+ ExchangeType.Topic));
+
+builder.Services.AddHostedService<NaAnalizListener>();
+
 
 builder.Services.AddControllers().AddJsonOptions(x =>
 {

@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlPanelRabbit", "Contr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PromedExchange", "PromedExchange\PromedExchange.csproj", "{C3AC53C5-FD5A-41DB-9D5A-191A53810977}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentService", "DocumentService\DocumentService.csproj", "{C6C1051B-F811-440F-B89A-C96884AE983A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentService", "DocumentService\DocumentService.csproj", "{C6C1051B-F811-440F-B89A-C96884AE983A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
