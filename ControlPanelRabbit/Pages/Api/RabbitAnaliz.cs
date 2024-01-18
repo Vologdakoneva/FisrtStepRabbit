@@ -28,8 +28,10 @@ namespace ControlPanelRabbit.Pages.Api
             [FromQuery(Name = "Fiokey")] string Fiokey,
             [FromQuery(Name = "FioDoctor")] string FioDoctor,
             [FromQuery(Name = "FioDoctorkey")] string FioDoctorkey,
-            [FromQuery(Name = "Databiomaterial")] string Databiomaterial,
-            [FromQuery(Name = "Items")] string Items
+            [FromQuery(Name = "Databiomaterial")] string? Databiomaterial,
+            [FromQuery(Name = "Items")] string? Items,
+            [FromQuery(Name = "AnalizHead")] string? AnalizHead,
+            [FromQuery(Name = "UetHead")] string? UetHead
             )
         {
             DocAnaliz docAnaliz = new DocAnaliz();
@@ -47,10 +49,15 @@ namespace ControlPanelRabbit.Pages.Api
             docAnaliz.NomDoc = NomDoc;
             docAnaliz.Fio = Fio;
             docAnaliz.FioDoctor = FioDoctor;
-            docAnaliz.Databiomaterial = Databiomaterial == null ? DateTime.Now : (DateTime)Convert.ToDateTime(Databiomaterial);
-            docAnaliz.Datadoc = Databiomaterial == null ? DateTime.Now : (DateTime)Convert.ToDateTime(Datadoc);
+            docAnaliz.Databiomaterial = Databiomaterial == null ? DateTime.Now.Date : (DateTime)Convert.ToDateTime(Databiomaterial);
+            docAnaliz.Datadoc = Datadoc == null ? DateTime.Now.Date : (DateTime)Convert.ToDateTime(Datadoc);
+            docAnaliz.DataChange = DateTime.Now;
+            docAnaliz.AnalizHead = AnalizHead;
+            docAnaliz.UetHead = UetHead;
+            Docsummary docsummary = new Docsummary();
 
-
+            if (Items != null)
+            { 
             List<DocItems> docItems = new List<DocItems>();
             string[] itemAll = Items.Split("|");
             foreach ( string item in itemAll )
@@ -59,7 +66,7 @@ namespace ControlPanelRabbit.Pages.Api
                 DocItems docItem = new DocItems();
                 string[] StrItem = item.Split("*");
                 docItem.DocLink = gDocLink;
-                docItem.NameAnaliz = StrItem[0];
+                docItem.AnalizText = StrItem[0];
                 docItem.norma = StrItem[1];
                 docItem.result = StrItem[2];
                 docItem.uet = StrItem[3];
@@ -68,8 +75,9 @@ namespace ControlPanelRabbit.Pages.Api
             }
             string AnalizString = JsonConvert.SerializeObject(docItems);
             docAnaliz.Items = AnalizString;
-            Docsummary docsummary = new Docsummary();
+            
             docsummary.Items = docItems.ToArray();
+            }
             docsummary.docAnaliz = docAnaliz;
             string personString = JsonConvert.SerializeObject(docsummary);
             Dictionary<string, object> headers = new Dictionary<string, object> { { "", null } };

@@ -3,6 +3,7 @@ using System;
 using DocumentService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DocumentService.Migrations
 {
     [DbContext(typeof(DocumentDbContext))]
-    partial class DocumentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240111070541_heaвchanges")]
+    partial class heaвchanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,6 +33,7 @@ namespace DocumentService.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDALL"));
 
                     b.Property<string>("AnalizHead")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("DataChange")
@@ -65,11 +68,11 @@ namespace DocumentService.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("IdDoctor")
-                        .HasColumnType("bigint");
+                    b.Property<int>("IdDoctor")
+                        .HasColumnType("integer");
 
-                    b.Property<long?>("IdFio")
-                        .HasColumnType("bigint");
+                    b.Property<int>("IdFio")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Items")
                         .IsRequired()
@@ -84,6 +87,7 @@ namespace DocumentService.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("UetHead")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("successfully")

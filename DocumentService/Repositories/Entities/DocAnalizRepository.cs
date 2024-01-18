@@ -2,6 +2,7 @@
 using DocumentService.Entities;
 using DocumentService.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace DocumentService.Repositories.Entities
 {
@@ -28,7 +29,18 @@ namespace DocumentService.Repositories.Entities
 
         public IQueryable<DocAnaliz> GetDocsAnaliz()
         {
-           return context.DocAnaliz;
+            //DocAnaliz[] docs =  context.DocAnaliz.OrderByDescending(p => p.DataChange).ToArray();
+
+            //string text = docs[0].Fio;
+            
+            //Encoding utf8 = Encoding.GetEncoding("UTF-8");
+            //Encoding win1251 = Encoding.Default; // GetEncoding("1251");
+            
+            //byte[] utf8Bytes = win1251.GetBytes(text);
+            //byte[] win1251Bytes = Encoding.Convert(win1251, utf8, utf8Bytes);
+
+            //Console.WriteLine(win1251.GetString(win1251Bytes));
+            return context.DocAnaliz.OrderByDescending(p => p.DataChange); 
         }
 
         public void SavePersons(DocAnaliz entity)

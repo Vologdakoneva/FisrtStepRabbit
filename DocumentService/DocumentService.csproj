@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Plain.RabbitMQ\Plain.RabbitMQ.csproj" />
+    <ProjectReference Include="..\PromedExchange\PromedExchange.csproj" />
   </ItemGroup>
 
 </Project>

@@ -21,7 +21,10 @@ namespace PacientService.Repositories.Entities
 
         public Person GetPersonByEntity(Guid entity)
         {
-            return (Person)context.Person.Where(p=>p.PersonLink==entity);
+            Person? person = context.Person.Where(p => p.PersonLink == entity).FirstOrDefault();
+            if (person == null) { return new Person(); }
+            else
+            return person;
         }
 
         public IQueryable<Person> GetPersons()

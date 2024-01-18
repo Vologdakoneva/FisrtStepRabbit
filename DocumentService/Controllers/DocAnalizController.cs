@@ -26,9 +26,9 @@ namespace DocumentService.Controllers
 
         // GET api/<DocAnalizController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public DocAnaliz Get(Guid id)
         {
-            return "value";
+            return docAnaliz.GetDocAnalizEntity(id);
         }
 
         // POST api/<DocAnalizController>

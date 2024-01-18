@@ -10,8 +10,6 @@
 
 <script src="~/js/devextreme/jquery.js"></script>
 <script src="~/js/devextreme/dx.all.js"></script>
-@*<script src="~/js/devextreme/dx.viz-web.js"></script>*@
-
 <script src="~/js/devextreme/aspnet/dx.aspnet.mvc.js"></script>
 <script src="~/js/devextreme/aspnet/dx.aspnet.data.js"></script>
 <script src="~/js/devextreme/localization/dx.messages.ru.js"></script>
@@ -32,7 +30,7 @@
     .ID("gridContainer")
     .ShowBorders(true)
     .DataSource(Model.docAnaliz)
-    .KeyExpr("IDALL")
+    .KeyExpr("DocLink")
     .ShowBorders(true)
     .RemoteOperations(false)
     .AllowColumnReordering(true)
@@ -51,18 +49,79 @@
         c.Add().DataField("Fio").Caption("ФИО Пациента");
         c.Add().DataField("FioDoctor").Caption("ФИО Врача");
         c.Add().DataField("Databiomaterial").Caption("Дата пробы").Width(110);
+        c.Add().DataField("AnalizHead").Caption("Анализ").Width(110);
+        c.Add().DataField("UetHead").Caption("Анализ Код УЕТ").Width(110);
+        c.Add().DataField("DataChange").Caption("Изменено").Width(135).DataType(GridColumnDataType.DateTime);
     }
     )
     .MasterDetail(m => m
         .Enabled(true)
         .Template(new TemplateName("gridContainer-details"))
-   ) 
+       )
 )
 
+@using (Html.DevExtreme().NamedTemplate("gridContainer-details"))
+{
+    @(Html.DevExtreme().TabPanel()
+            .Items(items =>
+            {
+                items.Add()
+                    .Title("Анализы")
+                    .Template(new TemplateName("gridContainer-details-tab1Template"))
+                     .Option("tabExtras", new { DocLink = new JS("data.DocLink") });
 
+                items.Add()
+                    .Title("Ошибки")
+                    .Template(new TemplateName("gridContainer-details-tab2Template"))
+                    .Option("tabExtras", new { DocLink = new JS("data.DocLink") });
+            })
+        )
+}
 
+@using (Html.DevExtreme().NamedTemplate("gridContainer-details-tab1Template"))
+{
+    @(Html.DevExtreme().DataGrid()
+            .ID(new JS("'gridContainer-orderHistoryGrid-' + tabExtras.DocLink"))
+            .ShowBorders(true)
+            .DataSource(d => d.Mvc()
+                    .Controller("..")
+                    .LoadAction("DocAnalizItems")
+                     .LoadParams(new { DocLink = new JS("tabExtras.DocLink")  })
+                    )
+            .Paging(p => p.PageSize(5))
+            .Columns(columns =>
+            {
+                    columns.Add().DataField("AnalizText").Caption("Анализ").Width(200);
+                    columns.Add().DataField("norma").Caption("Норма");
+                    columns.Add().DataField("result").Caption("Результат");
+                    columns.Add().DataField("uet").Caption("код УЕТ");
+                    columns.Add().DataField("kod").Caption("код");
+            })
+
+        )
+}
+@using (Html.DevExtreme().NamedTemplate("gridContainer-details-tab2Template"))
+{
+    @(Html.DevExtreme().DataGrid()
+            .ID(new JS("'gridContainer-orderHistoryGrid2-' + tabExtras.DocLink"))
+            .ShowBorders(true)
+            .DataSource(d => d.Mvc()
+                    .Controller("..")
+                    .LoadAction("DocAnalizErrors")
+                    .LoadParams(new { DocLink = new JS("tabExtras.DocLink") })
+                    )
+            .Paging(p => p.PageSize(5))
+            .Columns(columns =>
+            {
+                    columns.Add().DataField("ErrorSource").Caption("Источник").Width(100);
+                    columns.Add().DataField("ErrorText").Caption("Текст");
+            })
+
+        )
+}
 
 <script>
+    
     var locales = [
         { name: "Русский", value: "ru" }
     ];

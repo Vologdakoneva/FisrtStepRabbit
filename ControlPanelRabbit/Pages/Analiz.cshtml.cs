@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DevExtreme.AspNet.Data;
+using DevExtreme.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using NuGet.Protocol;
@@ -17,6 +19,12 @@ namespace ControlPanelRabbit.Pages
             this.configuration = configuration;
         }
         public DocAnaliz[]? docAnaliz;
+
+        public DocItems[] docItem(object supplierID)  {
+        
+            return JsonConvert.DeserializeObject<DocItems[]>(docAnaliz[0].Items);
+        }
+
         public void OnGet()
         {
             try
@@ -24,12 +32,13 @@ namespace ControlPanelRabbit.Pages
                 string urlDocService = configuration.GetConnectionString("DocumentService");
                 string Respose = GetAsync(urlDocService);
                 docAnaliz = JsonConvert.DeserializeObject<DocAnaliz[]>(Respose);
+                
                 if (Respose == "") { throw new NotImplementedException(); }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 DocAnaliz[] docAnalizs = new DocAnaliz[1];
-                docAnalizs[0] = new DocAnaliz() { Fio = "Ошибка сервиса Документы" };
+                docAnalizs[0] = new DocAnaliz() { Fio = "Ошибка сервиса Документы", FioDoctor = ex.Message };
                 docAnaliz = docAnalizs;
 
             }
