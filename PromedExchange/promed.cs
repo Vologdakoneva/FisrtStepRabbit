@@ -370,8 +370,13 @@ namespace PromedExchange
             {
                 JsonElement error_message = jsondoc.RootElement.GetProperty("error_msg");
                 error_msg = error_message.GetString() + " " + person.FamilyPerson + " " + person.NamePerson +" " + person.FathersPerson;
+                return idperson;
             }
-
+            if ((bool)person.IsVrach) { 
+                response = SendPost("/api/MedWorker",//"Sess_id=" + sess_id +
+                                        "Person_id=" + idperson.ToString()
+                                        );
+            }
             return idperson;
         }
 

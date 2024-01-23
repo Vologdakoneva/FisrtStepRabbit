@@ -66,9 +66,9 @@ namespace ControlPanelRabbit.Pages.Api
                 DocItems docItem = new DocItems();
                 string[] StrItem = item.Split("*");
                 docItem.DocLink = gDocLink;
-                docItem.AnalizText = StrItem[0];
-                docItem.norma = StrItem[1];
-                docItem.result = StrItem[2];
+                docItem.AnalizText = StrItem[0].Replace('/', '.'); ;
+                docItem.norma = StrItem[1].Replace('/', '.'); ;
+                docItem.result = StrItem[2].Replace('/','.');
                 docItem.uet = StrItem[3];
                 docItems.Add(docItem);
                 }

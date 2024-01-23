@@ -3,6 +3,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DocumentService.Entities
 {
+    public class ItemPromed
+    {
+        public string UslugaComplex_id { get; set; } = string.Empty;
+        public string UslugaTest_ResultValue { get; set; } = string.Empty;
+        public string UslugaTest_ResultApproved { get; set; } = "1";
+        public string UslugaTest_deleted { get; set; } = "0";
+        public string UslugaTest_setDT { get; set; } = string.Empty;
+
+    }
     public class Docsummary
     {
         public class DocError
