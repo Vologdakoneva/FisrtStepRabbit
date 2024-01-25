@@ -126,7 +126,7 @@ namespace PromedExchange
             Cookie SessionCookie = new Cookie();
             SessionCookie.Name = "Cookie";
             SessionCookie.Value = "PHPSESSID=" + sess_id;
-                SessionCookie.Domain = "cifromed35.ru";
+                SessionCookie.Domain = "rmisvo.cifromed35.ru";
 
             SessionCookieHolder.Add(SessionCookie);
             }

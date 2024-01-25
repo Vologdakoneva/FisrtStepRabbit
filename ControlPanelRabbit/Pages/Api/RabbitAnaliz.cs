@@ -64,7 +64,7 @@ namespace ControlPanelRabbit.Pages.Api
             {
                 if (item != "") { 
                 DocItems docItem = new DocItems();
-                string[] StrItem = item.Split("*");
+                string[] StrItem = item.Split("@");
                 docItem.DocLink = gDocLink;
                 docItem.AnalizText = StrItem[0].Replace('/', '.'); ;
                 docItem.norma = StrItem[1].Replace('/', '.'); ;

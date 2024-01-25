@@ -35,7 +35,13 @@ namespace DocumentService
 
         private bool SubscribeAnaliz(string message, IDictionary<string, object> dictionary)
         {
-            Console.WriteLine(" Сообщение получено " + "\n");
+            Console.WriteLine(" Сообщение получено " + DateTime.Now,ToString() + "\n");
+
+
+
+
+
+
             Docsummary responsedoc;
             try
             {
@@ -82,6 +88,12 @@ namespace DocumentService
 
                 }
 
+                int rrr = 0;
+                if (docAnaliz.Fio== "БЕЛЯЕВА ЕКАТЕРИНА ВАСИЛЬЕВНА" && rrr==0)
+                {
+                    rrr = 10;
+                }
+
                 List<DocError> docErrors = new List<DocError>();
                 string urlPacientService = configuration.GetConnectionString("PacientService");
                 string Respose = "";
@@ -121,6 +133,8 @@ namespace DocumentService
                 }
                 docAnaliz.IdDoctor = person.IdPromedPerson;
                 dbContext.SaveChanges();
+                // debug only
+                //  return true;
 
                 // Опредяем врача
                 Int64 MedWorker_id = 0;
@@ -128,7 +142,6 @@ namespace DocumentService
                 Int64 MedStaffFact_id = 0;
                 string response = ""; JsonElement element;
                 PromedExchange.Promed promed = new PromedExchange.Promed(false);
-
                 response = promed.SendGet("/api/MedWorker?Person_id=" + docAnaliz.IdDoctor);
                 if (promed.GetErrorCode())
                 {
@@ -146,7 +159,13 @@ namespace DocumentService
                     ;
                     if (MedWorker_id<=0 && (element is object))
                     {
-                        MedWorker_id = Convert.ToInt64(element.GetProperty("MedWorker_id").GetString());
+                        try
+                        {
+                            MedWorker_id = Convert.ToInt64(element.GetProperty("MedWorker_id").GetString());
+                        }
+                        catch (Exception)
+                        {
+                        }
                     }
                     if (MedWorker_id <= 0)
                     {
@@ -239,7 +258,8 @@ namespace DocumentService
                     {
 
                         DocItems[]? itemsdoc = JsonConvert.DeserializeObject<DocItems[]>(docAnaliz.Items);
-                        if (itemsdoc == null)
+
+                        if (itemsdoc == null || itemsdoc.Count() ==0)
                         {
                             docErrors.Add(new DocError() { ErrorSource = "1с", ErrorText = "Анализов не определено" });
                             docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
@@ -259,20 +279,47 @@ namespace DocumentService
                         }
                         for (int i = 0; i < itemsdoc.Count(); i++)
                         {
-                                 response = promed.SendGet("api/UslugaComplexMedService?MedService_id=" + 13090
-                                                           + "&UslugaComplex_Code=" + docAnaliz.UetHead + "&ResponseFull=1");
-                                 element = promed.GetData();
-                            for (int j = 0; j < element.GetArrayLength(); j++)
+                            if (itemsdoc[i].uet == "" || itemsdoc[i].uet == null)
                             {
-                                if (element[j].GetProperty("UslugaComplex_Code").GetString() == itemsdoc[j].uet && element[j].GetProperty("UslugaComplex_pid").GetString()!=null)
+                                docErrors.Add(new DocError() { ErrorSource = "1c", ErrorText = "нет УЕТ " + itemsdoc[i].AnalizText });
+                                docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
+                                dbContext.SaveChanges();
+                            }
+
+                        }
+                        return true;
+
+                        response = promed.SendGet("/api/UslugaComplexMedService/?MedService_id=" + 13090 //
+                                                   + "&ResponseFull=1"); //+ "&UslugaComplex_Code=" + docAnaliz.UetHead
+                        if (promed.GetErrorCode()) {
+                            element = promed.GetData();
+
+                                for (int i = 0; i < element.GetArrayLength(); i++)
                                 {
-                                    itemsdoc[j].kod = element[j].GetProperty("UslugaComplex_id").GetString();
+                                    UslugaComplex_ResCode = element[i].GetProperty("UslugaComplex_ResCode").GetString();
+                                if (docAnaliz.UetHead == UslugaComplex_ResCode) {
+                                    UslugaComplexMedService_ResId = element[i].GetProperty("UslugaComplexMedService_ResId").GetString();
+                                    
+                                    JsonElement data = element[i].GetProperty("UslugaComplexMedService_TestList"); 
+
+                                    for (int j = 0; j < data.GetArrayLength(); j++)
+                                    {
+                                        if (data[j].GetProperty("UslugaComplex_Code").GetString() == itemsdoc[j].uet && element[j].GetProperty("UslugaComplex_pid").GetString()!=null)
+                                        {
+                                            itemsdoc[i].kod = element[j].GetProperty("UslugaComplex_id").GetString();
+                                        }
+                                    }
                                 }
                             }
                         }
+                        docAnaliz.Items = JsonConvert.SerializeObject(itemsdoc);
+                        dbContext.Entry(docAnaliz).State = EntityState.Modified;
+                        dbContext.DocAnaliz.Attach(docAnaliz);
+                        dbContext.SaveChanges();
 
 
                     }
+                    
 
                     if (EvnPLBase_id == 0) {
 
@@ -285,7 +332,7 @@ namespace DocumentService
                                "Person_id=" + docAnaliz.IdFio + // идентификатор человека
                                "&EvnPL_NumCard=" + docAnaliz.NomDoc + //№ талона. Уникальный в рамках МО.
                                "&EvnPL_IsFinish=" + "0" +   //  Признак законченности случая. Возможные значения: 0 и 1, – где 0 – нет, 1 – да
-                               "&Evn_setDT=" + DateTime.Now.ToString("yyyy.MM.dd hh:mm:ss") + //Дата и время посещения ГГГГ–ММ–ДД чч:мм:сс;
+                               "&Evn_setDT=" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + //Дата и время посещения ГГГГ–ММ–ДД чч:мм:сс;
                                "&EvnVizitPL_Time=" + 45 +
                                "&LpuSection_id=" + LpuSection_id + //16654 + //LpuSection_id + //"2635" LpuSection_id + //идентификатор отделения МО  dbo.LpuSection
                                "&MedStaffFact_id=" + MedStaffFact_id + //Специальность врача: идентификатор справочника медицинских работников MedStaffFact_id   MedWorker_id
@@ -296,7 +343,7 @@ namespace DocumentService
                                "&Mes_id=" + 1 + //МЭС (передается только для первого посещения) dbo.MesLevel
                                "&UslugaComplex_uid=" + 4550001 + //UslugaComplex_id_Head + //"4550001"+ //код посещения; Обязательно если вид оплаты ОМС
                                "&Diag_id=" + 2 + //Основной диагноз (В ТЗ поле не обязательное, на форме обязательное)
-                               "&EvnDirection_setDate=" + docAnaliz.Datadoc.ToString("yyyy.MM.dd") + //
+                               "&EvnDirection_setDate=" + docAnaliz.Datadoc.ToString("yyyy-MM-dd") + //
                                "&MedicalCareKind_id=" + 5 //Идентификатор вида медицинской помощи
                       );
                         if (promed.GetErrorCode())
@@ -314,6 +361,10 @@ namespace DocumentService
                     for (int i = 0; i < items.Count(); i++)
                     {
                         kodelist.Add(items[i].kod);
+                        if (KodelistIDComplex != "")
+                            KodelistIDComplex = KodelistIDComplex + ",";
+                        KodelistIDComplex = KodelistIDComplex + items[i].kod;
+
                     }
 
                     string KodelistArrayJSON = JsonConvert.SerializeObject(kodelist);
@@ -327,7 +378,7 @@ namespace DocumentService
                                "&EvnDirection_Num=" + docAnaliz.NomDoc +
                                "&LpuSection_id=" + LpuSection_id +
                                "&Lpu_sid=" + 12600044 +
-                               "&EvnDirection_setDate=" + docAnaliz.Datadoc.ToString("yyyy.MM.dd") +
+                               "&EvnDirection_setDate=" + docAnaliz.Datadoc.ToString("yyyy-MM-dd") +
                                "&PayType_id=" + "190" +  // vidoplID
                                "&DirType_id=" + "10" +  // На исследование
                                "&Diag_id=" + "null" + // 2??
@@ -347,8 +398,9 @@ namespace DocumentService
                       );
 
                         string Evn_id = ""; string EvnQueue_id = ""; string EvnPrescr_id = "";
-                    if (promed.GetErrorCode()) {
-                            
+                        if (promed.GetErrorCode())
+                        {
+
                             JsonElement Napr = promed.GetData();
                             EvnDirection_id = Convert.ToInt32(Napr[0].GetProperty("EvnDirection_id").GetString()); // идентификатор направления
                             Evn_id = Napr[0].GetProperty("Evn_id").GetString();                   // идентификатор события;
@@ -358,31 +410,35 @@ namespace DocumentService
                             response = promed.SendGet("/api/EvnDirection?EvnDirection_id=" + EvnDirection_id);
 
 
-                            if (promed.GetErrorCode()) {
+                            if (promed.GetErrorCode())
+                            {
                                 Napr = promed.GetData();
-                                if (Napr.GetArrayLength() > 0) { 
-                                  EvnDirection_id = Convert.ToInt32(Napr[0].GetProperty("EvnDirection_id").GetString()); // идентификатор направления
-                                  Evn_id = Napr[0].GetProperty("Evn_id").GetString();                   // идентификатор события;
-                                  EvnQueue_id = Napr[0].GetProperty("EvnQueue_id").GetString();         // идентификатор постановки в очередь
-                                  EvnPrescr_id = Napr[0].GetProperty("EvnPrescr_id").GetString();      // идентификатор назначения
+                                if (Napr.GetArrayLength() > 0)
+                                {
+                                    EvnDirection_id = Convert.ToInt32(Napr[0].GetProperty("EvnDirection_id").GetString()); // идентификатор направления
+                                    Evn_id = Napr[0].GetProperty("Evn_id").GetString();                   // идентификатор события;
+                                    EvnQueue_id = Napr[0].GetProperty("EvnQueue_id").GetString();         // идентификатор постановки в очередь
+                                    EvnPrescr_id = Napr[0].GetProperty("EvnPrescr_id").GetString();      // идентификатор назначения
 
 
                                 }
                             }
-                        
 
 
-                    
 
-                    }
+
+
+                        }
+                        else
+                           ;
                 }
                     // Добавление информации о факте взятия пробы по направлению
                     response = promed.SendPost("/api/EvnLabSample",
                                    "EvnDirection_id=" + EvnDirection_id +
-                                 "&EvnLabSample_setDT=" + docAnaliz.Datadoc.ToString("yyyy.MM.dd hh:mm:ss") + " " + DateTime.Now.ToString("hh:mm:ss") +
-                                 "&EvnLabSample_StudyDT=" + docAnaliz.Datadoc.ToString("yyyy.MM.dd hh:mm:ss") + " " + DateTime.Now.ToString("hh:mm:ss") +
-                                 "&EvnLabSample_AnalyzerDate=" + docAnaliz.Databiomaterial.ToString("yyyy.MM.dd hh:mm:ss") + " " + DateTime.Now.ToString("hh:mm:ss") +
-                                 "&EvnLabSample_AnalyzerDate=" + docAnaliz.Databiomaterial.ToString("yyyy.MM.dd hh:mm:ss") + " " + DateTime.Now.ToString("hh:mm:ss") +
+                                 "&EvnLabSample_setDT=" + docAnaliz.Datadoc.AddMinutes(5).ToString("yyyy-MM-dd hh:mm:ss")  +
+                                 "&EvnLabSample_StudyDT=" + docAnaliz.Datadoc.AddMinutes(5).ToString("yyyy-MM-dd hh:mm:ss")  +
+                                 "&EvnLabSample_AnalyzerDate=" + docAnaliz.Databiomaterial.AddMinutes(6).ToString("yyyy-MM-dd hh:mm:ss") +
+                                 "&EvnLabSample_AnalyzerDate=" + docAnaliz.Databiomaterial.AddMinutes(6).ToString("yyyy-MM-dd hh:mm:ss") +
                                  "&UslugaComplexList=" + KodelistIDComplex + //UslugaComplex_id_Head + /// KodelistIDComplex KodelistУЕТ  KodelistУЕТHead
                                                                              //"&Lpu_did=12600044"
                                  "&LpuSection_did=16654" + //LpuSection_id+  //id отделения, 16654
@@ -403,7 +459,7 @@ namespace DocumentService
                                         {
                                             UslugaComplex_id = items.ElementAt(i).kod,
                                             UslugaTest_ResultValue = items.ElementAt(i).result,
-                                            UslugaTest_setDT = docAnaliz.Datadoc.AddMinutes(10).ToString("yyyy.MM.dd hh:mm:ss")
+                                            UslugaTest_setDT = docAnaliz.Datadoc.AddMinutes(10).ToString("yyyy-MM-dd hh:mm:ss")
                                         });
                                     }
 
