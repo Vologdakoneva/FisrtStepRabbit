@@ -89,7 +89,7 @@ namespace DocumentService
                 }
 
                 int rrr = 0;
-                if (docAnaliz.Fio== "БЕЛЯЕВА ЕКАТЕРИНА ВАСИЛЬЕВНА" && rrr==0)
+                if (docAnaliz.Fio== "РЯБЕВА СВЕТЛАНА НИКОЛАЕВНА" && rrr==0)
                 {
                     rrr = 10;
                 }
@@ -284,10 +284,11 @@ namespace DocumentService
                                 docErrors.Add(new DocError() { ErrorSource = "1c", ErrorText = "нет УЕТ " + itemsdoc[i].AnalizText });
                                 docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
                                 dbContext.SaveChanges();
+                                return true;
                             }
 
                         }
-                        return true;
+                        
 
                         response = promed.SendGet("/api/UslugaComplexMedService/?MedService_id=" + 13090 //
                                                    + "&ResponseFull=1"); //+ "&UslugaComplex_Code=" + docAnaliz.UetHead
@@ -304,9 +305,12 @@ namespace DocumentService
 
                                     for (int j = 0; j < data.GetArrayLength(); j++)
                                     {
-                                        if (data[j].GetProperty("UslugaComplex_Code").GetString() == itemsdoc[j].uet && element[j].GetProperty("UslugaComplex_pid").GetString()!=null)
+                                        for (int ii = 0; ii < itemsdoc.Count(); ii++)
                                         {
-                                            itemsdoc[i].kod = element[j].GetProperty("UslugaComplex_id").GetString();
+                                            if (data[j].GetProperty("UslugaComplex_Code").GetString() == itemsdoc[ii].uet)
+                                            {
+                                                itemsdoc[ii].kod = data[j].GetProperty("UslugaComplex_id").GetString();
+                                            }
                                         }
                                     }
                                 }
@@ -319,8 +323,14 @@ namespace DocumentService
 
 
                     }
-                    
+                    if (UslugaComplexMedService_ResId=="")
+                    {
+                        docErrors.Add(new DocError() { ErrorSource = "промед", ErrorText = " UslugaComplexMedService_ResId не найден " });
+                        docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
+                        dbContext.SaveChanges();
+                        return true;
 
+                    }
                     if (EvnPLBase_id == 0) {
 
                         string vidoplID = "";
@@ -369,7 +379,26 @@ namespace DocumentService
 
                     string KodelistArrayJSON = JsonConvert.SerializeObject(kodelist);
 
-                    int EvnDirection_id = 0;
+                    Int64 EvnDirection_id = 0;
+                    string Evn_id = ""; string EvnQueue_id = ""; string EvnPrescr_id = "";
+
+                    response = promed.SendGet("/api/EvnDirection" +
+                                "?Person_id=" + docAnaliz.IdFio + //EvnVizitPL_id  EvnPLBase_id
+                               "&EvnDirection_Num=" + docAnaliz.NomDoc +
+                               "&LpuSection_id=" + LpuSection_id +
+                               "&Lpu_sid=" + 12600044 +
+                               "&EvnDirection_setDate=" + docAnaliz.Datadoc.ToString("yyyy-MM-dd") 
+                                );
+                    if (promed.GetErrorCode())
+                    {
+                        JsonElement Napre = promed.GetData();
+                        if (Napre.GetArrayLength() == 1) {
+                            EvnDirection_id = Convert.ToInt64( Napre[0].GetProperty("EvnDirection_id").GetString()); // идентификатор направления
+                            Evn_id = Napre[0].GetProperty("Evn_id").GetString();                   // идентификатор события;
+                            EvnQueue_id = Napre[0].GetProperty("EvnQueue_id").GetString();         // идентификатор постановки в очередь
+                            EvnPrescr_id = Napre[0].GetProperty("EvnPrescr_id").GetString();       // идентификатор назначения
+                        }
+                    }
                     if (EvnDirection_id == 0) {
 
                         response = promed.SendPost("/api/EvnDirection",
@@ -397,15 +426,14 @@ namespace DocumentService
 
                       );
 
-                        string Evn_id = ""; string EvnQueue_id = ""; string EvnPrescr_id = "";
                         if (promed.GetErrorCode())
                         {
 
                             JsonElement Napr = promed.GetData();
-                            EvnDirection_id = Convert.ToInt32(Napr[0].GetProperty("EvnDirection_id").GetString()); // идентификатор направления
-                            Evn_id = Napr[0].GetProperty("Evn_id").GetString();                   // идентификатор события;
-                            EvnQueue_id = Napr[0].GetProperty("EvnQueue_id").GetString();         // идентификатор постановки в очередь
-                            EvnPrescr_id = Napr[0].GetProperty("EvnPrescr_id").GetString();       // идентификатор назначения
+                            EvnDirection_id = Convert.ToInt32(Napr.GetProperty("EvnDirection_id").GetString()); // идентификатор направления
+                            Evn_id = Napr.GetProperty("Evn_id").GetString();                   // идентификатор события;
+                            EvnQueue_id = Napr.GetProperty("EvnQueue_id").GetString();         // идентификатор постановки в очередь
+                            EvnPrescr_id = Napr.GetProperty("EvnPrescr_id").GetString();       // идентификатор назначения
 
                             response = promed.SendGet("/api/EvnDirection?EvnDirection_id=" + EvnDirection_id);
 
@@ -448,20 +476,35 @@ namespace DocumentService
                                  "&MedStaffFact_did=" + 350101000008445 + ///KodelistУЕТ  KodelistУЕТHead
                                  "&MedPersonal_did=" + 533 //533 //+ MedWorker_id  27309  //врач, взявший пробу, кочнева мед персонал 533
 
+
                                  );
+                    string messageuet = "";
                     if (promed.GetErrorCode()) {
                         JsonElement Probe = promed.GetData();
-                        int EvnLabSample_id = Convert.ToInt32(Probe[0].GetProperty("EvnLabSample_id").GetString()); // идентификатор направления
+                        Int64 EvnLabSample_id = Convert.ToInt64(Probe.GetProperty("EvnLabSample_id").GetString()); // идентификатор направления
                         List < ItemPromed > promeds = new List<ItemPromed>();
                                     for (int i = 0; i < items.Length; i++)
                                     {
-                                        promeds.Add(new ItemPromed()
+                                        if (items.ElementAt(i).kod != "")
                                         {
-                                            UslugaComplex_id = items.ElementAt(i).kod,
-                                            UslugaTest_ResultValue = items.ElementAt(i).result,
-                                            UslugaTest_setDT = docAnaliz.Datadoc.AddMinutes(10).ToString("yyyy-MM-dd hh:mm:ss")
-                                        });
+                                            promeds.Add(new ItemPromed()
+                                            {
+                                                UslugaComplex_id = items.ElementAt(i).kod,
+                                                UslugaTest_ResultValue = items.ElementAt(i).result,
+                                                UslugaTest_setDT = docAnaliz.Datadoc.AddMinutes(10).ToString("yyyy-MM-dd hh:mm:ss")
+
+                                            });
+                                        }
+                                        else { messageuet = messageuet + "нет УЕТ " + items.ElementAt(i).AnalizText; }
                                     }
+
+                        if (messageuet!="")
+                        {
+                            docErrors.Add(new DocError() { ErrorSource = "промед", ErrorText = messageuet });
+                            docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
+                            dbContext.SaveChanges();
+                            return true; 
+                        }
 
                         response = promed.SendPost("/api/UslugaTestAll",
                                      "EvnLabSample_id=" + EvnLabSample_id +  //идентификатор пробы
@@ -485,8 +528,16 @@ namespace DocumentService
                                        //"&LpuUnitType_id=" + 2  // ??  Условия оказания медицинской помощи.  поликлинника
                                        );
 
+                        if (promed.GetErrorCode())
+                        {
+                            docErrors.Add(new DocError() { ErrorSource = "промед", ErrorText = "Успешно." });
+                            docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
+                            docAnaliz.successfully = true;
+                            dbContext.SaveChanges();
+                            
+                        }
                     }
-                }
+                    }
 
                 
 
