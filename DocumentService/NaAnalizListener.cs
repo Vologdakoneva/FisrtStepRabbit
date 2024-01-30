@@ -430,7 +430,7 @@ namespace DocumentService
                         {
 
                             JsonElement Napr = promed.GetData();
-                            EvnDirection_id = Convert.ToInt32(Napr.GetProperty("EvnDirection_id").GetString()); // идентификатор направления
+                            EvnDirection_id = Convert.ToInt64(Napr.GetProperty("EvnDirection_id").GetString()); // идентификатор направления
                             Evn_id = Napr.GetProperty("Evn_id").GetString();                   // идентификатор события;
                             EvnQueue_id = Napr.GetProperty("EvnQueue_id").GetString();         // идентификатор постановки в очередь
                             EvnPrescr_id = Napr.GetProperty("EvnPrescr_id").GetString();       // идентификатор назначения
@@ -443,7 +443,7 @@ namespace DocumentService
                                 Napr = promed.GetData();
                                 if (Napr.GetArrayLength() > 0)
                                 {
-                                    EvnDirection_id = Convert.ToInt32(Napr[0].GetProperty("EvnDirection_id").GetString()); // идентификатор направления
+                                    EvnDirection_id = Convert.ToInt64(Napr[0].GetProperty("EvnDirection_id").GetString()); // идентификатор направления
                                     Evn_id = Napr[0].GetProperty("Evn_id").GetString();                   // идентификатор события;
                                     EvnQueue_id = Napr[0].GetProperty("EvnQueue_id").GetString();         // идентификатор постановки в очередь
                                     EvnPrescr_id = Napr[0].GetProperty("EvnPrescr_id").GetString();      // идентификатор назначения
