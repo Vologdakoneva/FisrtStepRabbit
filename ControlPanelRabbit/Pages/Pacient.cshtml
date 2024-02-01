@@ -1,5 +1,8 @@
 ﻿@page
 @using NonFactors.Mvc.Grid;
+@using DevExtreme.AspNet.Mvc;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+
 @model Pacient
 
 @{
@@ -14,7 +17,7 @@
 </style>
 
 
-<h1>@ViewData["Title"]</h1>
+<h2>@ViewData["Title"]</h2>
 
 <p>Перечень пациентов и состояние передачи.</p>
 @if (Model == null)
@@ -35,7 +38,79 @@
 
     </label>
 
-    @(
+@(Html.DevExtreme().DataGrid()
+    .ID("gridContainer")
+    .ShowBorders(true)
+    .DataSource(Model.Persons)
+    .KeyExpr("DocLink")
+    .ShowBorders(true)
+    .RemoteOperations(false)
+    .AllowColumnResizing(true)
+    .AllowColumnReordering(true)
+    .RowAlternationEnabled(true)
+     .Scrolling(scrolling => scrolling.ColumnRenderingMode(GridColumnRenderingMode.Virtual))
+    .FilterPanel(f => f.Visible(true))
+    .HeaderFilter(h => h.Visible(true))
+     .FilterRow(filterRow => filterRow
+            .Visible(true)
+            .ApplyFilter(GridApplyFilterMode.Auto)
+        )
+    .Columns(c =>
+    {
+        c.Add().DataField("successfully").Width(80).Caption("Успешно");
+            c.Add().DataField("FamilyPerson").Caption("Фамилия").Width(110);
+            c.Add().DataField("NamePerson").Caption("Имя").Width(110);
+            c.Add().DataField("FathersPerson").Caption("Отчество");
+            c.Add().DataField("DateChangePerson").Caption("Изменено").Width(135).DataType(GridColumnDataType.DateTime);
+            c.Add().DataField("birthDayPerson").Caption("Дата рождения"); 
+            c.Add().DataField("Sex_Person").Caption("Пол");
+            c.Add().DataField("IdPromedPerson").Caption("Id в промед");
+            c.Add().DataField("DataCreatePerson").Caption("Создано").Width(135).DataType(GridColumnDataType.DateTime); ;
+            c.Add().DataField("PersonLink").Caption("Guid").Width(135);
+        }
+    )
+    .MasterDetail(m => m
+        .Enabled(true)
+        .Template(new TemplateName("gridContainer-details"))
+       )
+)
+
+    @using (Html.DevExtreme().NamedTemplate("gridContainer-details"))
+    {
+        @(Html.DevExtreme().TabPanel()
+                    .Items(items =>
+                    {
+                        items.Add()
+                            .Title("Лог приема/передачи")
+                            .Template(new TemplateName("gridContainer-details-tab1Template"))
+                                     .Option("tabExtras", new { PersonLink = new JS("data.PersonLink") });
+
+                    })
+                )
+    }
+
+    @using (Html.DevExtreme().NamedTemplate("gridContainer-details-tab1Template"))
+    {
+        @(Html.DevExtreme().DataGrid()
+                        .ID(new JS("'gridContainer-orderHistoryGrid-' + tabExtras.PersonLink"))
+                    .ShowBorders(true)
+                    .DataSource(d => d.Mvc()
+                            .Controller("..")
+                            .LoadAction("Loganaliz")
+                            .LoadParams(new { PersonLink = new JS("tabExtras.PersonLink") })
+                            )
+                    .Paging(p => p.PageSize(5))
+                    .Columns(columns =>
+                    {
+                        columns.Add().DataField("ErrorSource").Caption("Источник").Width(200);
+                        columns.Add().DataField("ErrorText").Caption("Текст"); 
+                    })
+
+                )
+    }
+
+
+   @* @(
     Html.Grid(Model.Persons).Build(columns =>
                                                 {
                                                     columns.Add(model => model.successfully).Titled("Успешно")
@@ -74,7 +149,7 @@
                                                 .Attributed(new { data_type = "individuals" })
                                                 .RowAttributed(model => new { @class = model.successfully == true ? "working" : null, data_id = model.IDALL })
 
-                    );
+                    );*@
 }
 
 

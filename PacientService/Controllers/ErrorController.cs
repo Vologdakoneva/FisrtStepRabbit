@@ -28,9 +28,9 @@ namespace PacientService.Controllers
 
         // GET api/<ErrorController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IQueryable<ErrorPerson> Get(Guid id)
         {
-            return "value";
+            return errorPerson.GetErrorEntity(id) ;
         }
 
         // POST api/<ErrorController>

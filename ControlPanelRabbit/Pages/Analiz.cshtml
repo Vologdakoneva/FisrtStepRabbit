@@ -4,16 +4,6 @@
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 @model Analiz
 
-<link href="~/css/css/dx.common.css" rel="stylesheet" />
-<link href="~/css/css/dx.material.blue.light.compact.css" rel="stylesheet" />
-<link href="~/css/css/dx.material.blue.light.compact.css" rel="stylesheet" />
-
-<script src="~/js/devextreme/jquery.js"></script>
-<script src="~/js/devextreme/dx.all.js"></script>
-<script src="~/js/devextreme/aspnet/dx.aspnet.mvc.js"></script>
-<script src="~/js/devextreme/aspnet/dx.aspnet.data.js"></script>
-<script src="~/js/devextreme/localization/dx.messages.ru.js"></script>
-<script src="~/js/devextreme/globalize.js"></script>
 
 
 
@@ -21,7 +11,7 @@
 @{
     ViewData["Title"] = "Направления на анализ";
 }
-<h1>@ViewData["Title"]</h1>
+<h2>@ViewData["Title"]</h2>
 
 <p>Состояние обмена.</p>
 
@@ -34,6 +24,8 @@
     .ShowBorders(true)
     .RemoteOperations(false)
     .AllowColumnReordering(true)
+    .AllowColumnResizing(true)
+    .Scrolling(scrolling => scrolling.ColumnRenderingMode(GridColumnRenderingMode.Virtual))
     .RowAlternationEnabled(true)
     .FilterPanel(f => f.Visible(true))
     .HeaderFilter(h => h.Visible(true))
@@ -120,29 +112,7 @@
         )
 }
 
-<script>
-    
-    var locales = [
-        { name: "Русский", value: "ru" }
-    ];
-    //debugger;
-    var locale = getLocale();
-    DevExpress.localization.locale(locale);
 
-    function changeLocale(data) {
-        setLocale(data.value);
-        document.location.reload();
-    }
-
-    function getLocale() {
-        var locale = sessionStorage.getItem("locale");
-        return locale != null ? locale : "ru";
-    }
-
-    function setLocale(locale) {
-        sessionStorage.setItem("locale", locale);
-    }
-</script>
 
 <script type="text/javascript" src="~/js/mvc-grid/mvc-grid_rus.js"></script>
 

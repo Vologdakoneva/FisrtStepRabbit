@@ -19,9 +19,9 @@ namespace PacientService.Repositories.Entities
             throw new NotImplementedException();
         }
 
-        public ErrorPerson GetErrorEntity(ErrorPerson entity)
+        public IQueryable<ErrorPerson> GetErrorEntity(Guid entity)
         {
-            throw new NotImplementedException();
+            return context.ErrorPerson.OrderByDescending(o => o.DataError).Where(e => e.PersonLink == entity);
         }
 
         public IQueryable<ErrorPerson> GetErrors()

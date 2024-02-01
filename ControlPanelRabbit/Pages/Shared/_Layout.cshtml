@@ -7,6 +7,19 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ControlPanelRabbit.styles.css" asp-append-version="true" />
+
+
+    <link href="~/css/css/dx.common.css" rel="stylesheet" />
+    <link href="~/css/css/dx.material.blue.light.compact.css" rel="stylesheet" />
+    <link href="~/css/css/dx.material.blue.light.compact.css" rel="stylesheet" />
+
+    <script src="~/js/devextreme/jquery.js"></script>
+    <script src="~/js/devextreme/dx.all.js"></script>
+    <script src="~/js/devextreme/aspnet/dx.aspnet.mvc.js"></script>
+    <script src="~/js/devextreme/aspnet/dx.aspnet.data.js"></script>
+    <script src="~/js/devextreme/localization/dx.messages.ru.js"></script>
+    <script src="~/js/devextreme/globalize.js"></script>
+
 </head>
 <body>
     <header>
@@ -25,8 +38,8 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Pacient">Пациенты</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Log">Логи</a>
+                        <li class="nav-item" style="display:none">
+                            <a class="nav-link text-dark" asp-area=""  asp-page="/Log">Логи</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Analiz">Направления на анализ</a>
@@ -53,5 +66,30 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+
+    <script>
+
+        var locales = [
+            { name: "Русский", value: "ru" }
+        ];
+        //debugger;
+        var locale = getLocale();
+        DevExpress.localization.locale(locale);
+
+        function changeLocale(data) {
+            setLocale(data.value);
+            document.location.reload();
+        }
+
+        function getLocale() {
+            var locale = sessionStorage.getItem("locale");
+            return locale != null ? locale : "ru";
+        }
+
+        function setLocale(locale) {
+            sessionStorage.setItem("locale", locale);
+        }
+    </script>
 </body>
 </html>
