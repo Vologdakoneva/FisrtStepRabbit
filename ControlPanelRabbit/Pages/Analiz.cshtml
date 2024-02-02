@@ -26,6 +26,7 @@
     .AllowColumnReordering(true)
     .AllowColumnResizing(true)
     .Scrolling(scrolling => scrolling.ColumnRenderingMode(GridColumnRenderingMode.Virtual))
+    .ColumnAutoWidth(true)
     .RowAlternationEnabled(true)
     .FilterPanel(f => f.Visible(true))
     .HeaderFilter(h => h.Visible(true))

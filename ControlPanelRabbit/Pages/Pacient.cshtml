@@ -48,7 +48,8 @@
     .AllowColumnResizing(true)
     .AllowColumnReordering(true)
     .RowAlternationEnabled(true)
-     .Scrolling(scrolling => scrolling.ColumnRenderingMode(GridColumnRenderingMode.Virtual))
+    .Scrolling(scrolling => scrolling.ColumnRenderingMode(GridColumnRenderingMode.Virtual))
+    .ColumnAutoWidth(true)
     .FilterPanel(f => f.Visible(true))
     .HeaderFilter(h => h.Visible(true))
      .FilterRow(filterRow => filterRow
