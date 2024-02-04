@@ -22,7 +22,7 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public ErrorPerson[] Get()
         {
-            string PersonLink = HttpUtility.ParseQueryString(Request.QueryString.Value).Get("PersonLink");
+            string PersonLink = HttpUtility.ParseQueryString(Request.QueryString.Value).Get("PersonLink"); 
             try
             {
                 string urlDocService = configuration.GetConnectionString("PacientService") + "api/Error";
