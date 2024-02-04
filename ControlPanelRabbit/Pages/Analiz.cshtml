@@ -7,7 +7,6 @@
 
 
 
-
 @{
     ViewData["Title"] = "Направления на анализ";
 }
@@ -28,6 +27,8 @@
     .Scrolling(scrolling => scrolling.ColumnRenderingMode(GridColumnRenderingMode.Virtual))
     .ColumnAutoWidth(true)
     .RowAlternationEnabled(true)
+    .Export(e => e.Enabled(true).AllowExportSelectedData(true))
+    .OnExporting("exporting")
     .FilterPanel(f => f.Visible(true))
     .HeaderFilter(h => h.Visible(true))
      .FilterRow(filterRow => filterRow

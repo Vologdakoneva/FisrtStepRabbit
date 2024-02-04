@@ -20,6 +20,8 @@
     <script src="~/js/devextreme/localization/dx.messages.ru.js"></script>
     <script src="~/js/devextreme/globalize.js"></script>
 
+   
+
 </head>
 <body>
     <header>
@@ -89,6 +91,27 @@
 
         function setLocale(locale) {
             sessionStorage.setItem("locale", locale);
+        }
+    </script>
+    <script src="~/js/exceljs.min.js"></script>
+    <script src="~/js/filesaver.min.js"></script>
+    <script src="~/js/polyfill.min.js"></script>
+
+
+    <script>
+        function exporting(e) {
+            var workbook = new ExcelJS.Workbook();
+            var worksheet = workbook.addWorksheet('Analiz');
+
+            DevExpress.excelExporter.exportDataGrid({
+                component: e.component,
+                worksheet: worksheet,
+                autoFilterEnabled: true
+            }).then(function () {
+                workbook.xlsx.writeBuffer().then(function (buffer) {
+                    saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'Analiz.xlsx');
+                });
+            });
         }
     </script>
 </body>
