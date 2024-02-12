@@ -422,7 +422,8 @@ namespace DocumentService
                                                                                                    //"&UslugaComplexMedService_id=" + UslugaComplexMedService_id + // идентификатор теста
                                "&TestList=" + KodelistArrayJSON + // KodelistArrayJSON список тестов исследования; если массив не заполнен, то в
                                                                   //  направлении должны быть назначены все тесты исследования
-                               "&LpuUnitType_id=" + 0 //2  // ??  Условия оказания медицинской помощи. Поликлинника
+                               "&LpuUnitType_id=" + 0 + //2  // ??  Условия оказания медицинской помощи. Поликлинника +
+                               "&EvnDirection_Descr=Исследование"
 
                       );
 
@@ -458,8 +459,14 @@ namespace DocumentService
 
                         }
                         else
-                           ;
-                }
+                        {
+                            docErrors.Add(new DocError() { ErrorSource = "промед", ErrorText = "api/EvnDirection " + promed.error_msg });
+                            docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
+                            dbContext.SaveChanges();
+                            return true;
+                        }
+
+                    }
                     // Добавление информации о факте взятия пробы по направлению
                     response = promed.SendPost("/api/EvnLabSample",
                                    "EvnDirection_id=" + EvnDirection_id +
@@ -536,8 +543,16 @@ namespace DocumentService
                             dbContext.SaveChanges();
                             
                         }
+                        else
+                        {
+                            docErrors.Add(new DocError() { ErrorSource = "промед", ErrorText = "api/UslugaTestAll " + promed.error_msg });
+                            docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
+                            dbContext.SaveChanges();
+                            return true;
+                        }
+
                     }
-                    }
+                }
 
                 
 

@@ -106,6 +106,18 @@ namespace PromedExchange
         {
             jsondoc = JsonDocument.Parse(response);
             JsonElement error_code = jsondoc.RootElement.GetProperty("error_code");
+            if (error_code.GetInt32() != 0) {
+                try
+                {
+                    JsonElement error_message = jsondoc.RootElement.GetProperty("error_msg");
+                    error_msg = error_message.GetString();
+                }
+                catch (Exception)
+                {
+                }
+            }
+            
+
             return error_code.GetInt32() == 0;
         }
         public JsonElement GetData()
