@@ -94,7 +94,7 @@ namespace PacientService
                     }
 
                     PacientService.Entities.Person? person = dbContext.Person.Where(p => p.PersonLink == response.PersonLink).FirstOrDefault();
-                    if (person == null)
+                    if (person == null || person.PersonLink != response.PersonLink)
                     {
                         dbContext.Person.Add(response);
                         dbContext.SaveChanges();

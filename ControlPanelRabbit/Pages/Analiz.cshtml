@@ -40,12 +40,12 @@
         c.Add().DataField("successfully").Width(80).Caption("Успешно");
         c.Add().DataField("NomDoc").Caption("Ном.документа").Width(110);
         c.Add().DataField("Datadoc").Caption("Дата.документа").Width(110);
+        c.Add().DataField("DataChange").Caption("Изменено").Width(135).DataType(GridColumnDataType.DateTime);
         c.Add().DataField("Fio").Caption("ФИО Пациента");
         c.Add().DataField("FioDoctor").Caption("ФИО Врача");
         c.Add().DataField("Databiomaterial").Caption("Дата пробы").Width(110);
         c.Add().DataField("AnalizHead").Caption("Анализ").Width(110);
         c.Add().DataField("UetHead").Caption("Анализ Код УЕТ").Width(110);
-        c.Add().DataField("DataChange").Caption("Изменено").Width(135).DataType(GridColumnDataType.DateTime);
     }
     )
     .MasterDetail(m => m

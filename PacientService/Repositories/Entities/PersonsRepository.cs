@@ -23,8 +23,12 @@ namespace PacientService.Repositories.Entities
         {
             Person? person = context.Person.Where(p => p.PersonLink == entity).FirstOrDefault();
             if (person == null) { return new Person(); }
-            else
-            return person;
+            else { 
+               if (person.PersonLink != entity)
+                 return new Person();
+               else
+                return person;
+            }
         }
 
         public IQueryable<Person> GetPersons()
