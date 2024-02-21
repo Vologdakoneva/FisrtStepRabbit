@@ -37,10 +37,14 @@ namespace PacientService
             return Task.CompletedTask;
         }
 
+        private readonly object SubscribeLock = new object();
         private bool Subscribe(string message, IDictionary<string, object> header)
         {
             Console.WriteLine(" Сообщение получено " + "\n");
-            
+            Thread.BeginCriticalRegion();
+            try
+            {
+
 
             PacientService.Entities.Person response;
             try
@@ -183,7 +187,11 @@ namespace PacientService
                 Console.WriteLine(" Сообщение error " + ex.Message + "\n");
 
             }
-
+            }
+            finally
+            {
+                Thread.EndCriticalRegion();
+            }
             Console.WriteLine(" Сообщение обработано успешно " + DateTime.Now.ToString() + "\n");
 
             return true;
