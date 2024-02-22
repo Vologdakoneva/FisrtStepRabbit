@@ -38,10 +38,13 @@ namespace PacientService
         }
 
         private readonly object SubscribeLock = new object();
+        
         private bool Subscribe(string message, IDictionary<string, object> header)
         {
             Console.WriteLine(" Сообщение получено " + "\n");
             Thread.BeginCriticalRegion();
+            lock (SubscribeLock);
+            
             try
             {
 
@@ -127,10 +130,11 @@ namespace PacientService
                     Console.WriteLine(" SaveChanges " + "\n");
 
                     Console.WriteLine(" GetPerson " + "\n");
-                    Int64 idperson = promed.GetPerson(ConvertPerson(response));  ////promed.SendPut("","");
+                    Int64 idperson = 0;
+                        idperson = promed.GetPerson(ConvertPerson(response));  ////promed.SendPut("","");
 
 
-                    if (idperson == -10)
+                        if (idperson == -10)
                     {
                         Console.WriteLine(" Login Failed Promed " + "\n");
                         PacientService.Entities.ErrorPerson errorPerson = new PacientService.Entities.ErrorPerson();
@@ -190,6 +194,7 @@ namespace PacientService
             }
             finally
             {
+                promed.LogOut();
                 Thread.EndCriticalRegion();
             }
             Console.WriteLine(" Сообщение обработано успешно " + DateTime.Now.ToString() + "\n");

@@ -210,6 +210,30 @@ namespace PromedExchange
             return Logined;
         }
 
+        public bool LogOut()
+        {
+            try
+            {
+
+                if (sess_id != "")
+                {
+
+                    response = SendGet("/api/user/logout?Sess_id=" + sess_id);
+                    var jsondoc = JsonDocument.Parse(response);
+                    JsonElement error_code = jsondoc.RootElement.GetProperty("error_code");
+                    if (error_code.GetInt32() == 0)
+                    {
+                        Logined = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return Logined;
+        }
+
         public async Task<bool> LoginAsync()
         {
             if (sess_id == "")
@@ -254,8 +278,9 @@ namespace PromedExchange
                 Console.WriteLine(" Логин promed failed " );
                 return -10;
             }
-            Int64 idperson = -1;
-            
+            Int64 idperson = -1; string idString = "-1";
+
+
             DateTime birthDayPerson = (person.birthDayPerson == null ? DateTime.Now.Date : (DateTime)person.birthDayPerson);
             response = SendGet("/api/Person" + "?Sess_id=" + sess_id +
                                     //"&PersonFirName_FirName=" + person.NamePerson +
@@ -283,13 +308,13 @@ namespace PromedExchange
                     if (error_code.GetInt32() == 0) { 
                         data = jsondoc.RootElement.GetProperty("data");
                     if (data.GetArrayLength() != 0) { 
-                       string idString = data[0].GetProperty("Person_id").GetString();
+                       idString = data[0].GetProperty("Person_id").GetString();
                     }
                     }
                 }
                     if (data.GetArrayLength() != 0) {
                     Console.WriteLine(" Promed Get Person successfully ");
-                    string idString = data[0].GetProperty("Person_id").GetString();
+                    idString = data[0].GetProperty("Person_id").GetString();
                     string Family = data[0].GetProperty("PersonSurName_SurName").GetString();
                     string NamePerson = data[0].GetProperty("PersonFirName_FirName").GetString();
                     string Fathers = data[0].GetProperty("PersonSecName_SecName").GetString();
@@ -351,9 +376,10 @@ namespace PromedExchange
         }
         public Int64 savePerson(Person person)
         {
+            Int64 idperson = -1; error_msg = "";
             if (!Logined) { Login(); }
 
-            Int64 idperson = -1; error_msg = "";
+            
             DateTime birthDayPerson = (person.birthDayPerson == null ? DateTime.Now.Date : (DateTime)person.birthDayPerson);
             response = SendPost("/api/Person",//"Sess_id=" + sess_id +
                                     "PersonSurName_SurName=" + person.FamilyPerson +
@@ -382,7 +408,7 @@ namespace PromedExchange
             {
                 JsonElement error_message = jsondoc.RootElement.GetProperty("error_msg");
                 error_msg = error_message.GetString() + " " + person.FamilyPerson + " " + person.NamePerson +" " + person.FathersPerson;
-                return idperson;
+                return -1;
             }
             if ((bool)person.IsVrach) { 
                 response = SendPost("/api/MedWorker",//"Sess_id=" + sess_id +
