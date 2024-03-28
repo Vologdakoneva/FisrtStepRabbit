@@ -19,12 +19,15 @@ namespace DocumentService
         private readonly ISubscriber subscriber;
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IConfiguration configuration;
+        private readonly Promed promed;
 
         public NaAnalizListener(ISubscriber subscriber, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration) //, IPacientOperator pacientOperator
         {
             this.subscriber = subscriber;
             this.serviceScopeFactory = serviceScopeFactory;
             this.configuration = configuration;
+            this.promed = new Promed(false, configuration.GetConnectionString("cifromedLogin"), configuration.GetConnectionString("cifromedPassword"));
+
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -39,6 +42,9 @@ namespace DocumentService
 
 
 
+            Thread.BeginCriticalRegion();
+            try
+            {
 
 
 
@@ -53,6 +59,7 @@ namespace DocumentService
                 Console.WriteLine(" Сообщение ошибка данных " + "\n");
                 return true;
             }
+
             using (var scope = serviceScopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<DocumentDbContext>();
@@ -95,7 +102,17 @@ namespace DocumentService
                 }
 
                 List<DocError> docErrors = new List<DocError>();
-                string urlPacientService = configuration.GetConnectionString("PacientService");
+
+                    if (!promed.Logined) { promed.Login(); }
+                    if (!promed.Logined)
+                    {
+                        docErrors.Add(new DocError() { ErrorSource = "промед", ErrorText = "Login Failed" });
+                        docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
+                        dbContext.SaveChanges();
+                        return true;
+                    }
+
+                    string urlPacientService = configuration.GetConnectionString("PacientService");
                 string Respose = "";
                 try
                 {
@@ -104,8 +121,12 @@ namespace DocumentService
                 catch (Exception)
                 {
                     Respose = "";
-                }
-                Person person = JsonConvert.DeserializeObject<Person>(Respose);
+                        docErrors.Add(new DocError() { ErrorSource = "Service", ErrorText = "Ошибка сервиса Pacient" });
+                        docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
+                        dbContext.SaveChanges();
+                        return true;
+                    }
+                    Person person = JsonConvert.DeserializeObject<Person>(Respose);
 
                 if (person == null || person.FamilyPerson == "")
                 {
@@ -141,9 +162,16 @@ namespace DocumentService
                 Int64 LpuSection_id = 0;
                 Int64 MedStaffFact_id = 0;
                 string response = ""; JsonElement element;
-                PromedExchange.Promed promed = new PromedExchange.Promed(false);
+                // // // PromedExchange.Promed promed = new PromedExchange.Promed(false);
                 response = promed.SendGet("/api/MedWorker?Person_id=" + docAnaliz.IdDoctor);
-                if (promed.GetErrorCode())
+                if (!promed.GetErrorCode())
+                {
+                        docErrors.Add(new DocError() { ErrorSource = "Промед", ErrorText = "Врач " + docAnaliz.FioDoctor + "  не определен" + promed.error_msg });
+                        docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
+                        dbContext.SaveChanges();
+                        return true;
+                    }
+                    if (promed.GetErrorCode())
                 {
                     element = promed.GetData();
                     if (!(element is object))
@@ -165,8 +193,12 @@ namespace DocumentService
                         }
                         catch (Exception)
                         {
+                                docErrors.Add(new DocError() { ErrorSource = "Промед", ErrorText = "Не корректный ответ."+promed.response+"Врач " + docAnaliz.FioDoctor + "  не определен" });
+                                docAnaliz.Errors = JsonConvert.SerializeObject(docErrors);
+                                dbContext.SaveChanges();
+                                return true;
+                            }
                         }
-                    }
                     if (MedWorker_id <= 0)
                     {
                         docErrors.Add(new DocError() { ErrorSource = "Промед", ErrorText = "Врач " + docAnaliz.FioDoctor + "  не определен" });
@@ -555,6 +587,13 @@ namespace DocumentService
                 }
 
                 
+
+            }
+            }
+            finally
+            {
+                promed.LogOut();
+                Thread.EndCriticalRegion();
 
             }
             Console.WriteLine(" Сообщение обработано  " + "\n");

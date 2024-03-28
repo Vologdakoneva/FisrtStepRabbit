@@ -2,6 +2,7 @@
 using PacientService.Entities;
 using PacientService.Repositories.Interfaces;
 using Plain.RabbitMQ;
+
 //using PromedExchange;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -14,11 +15,13 @@ namespace PacientService.Controllers
     {
         private readonly IPerson Person;
         private readonly IPublisher publisher;
+        private readonly IConfiguration configuration;
+        private readonly PromedExchange.Promed promedexchage;
 
-        public PacientController(IPerson person, IPublisher publisher)
+        public PacientController(IPerson person, IPublisher publisher, IConfiguration configuration)
         {
-            PromedExchange.Promed promedexchage;
-            promedexchage = new PromedExchange.Promed(false);
+            this.configuration = configuration;
+            promedexchage = new PromedExchange.Promed(false, configuration.GetConnectionString("cifromedLogin"), configuration.GetConnectionString("cifromedPassword"));
             this.Person = person;
             this.publisher = publisher;
         }

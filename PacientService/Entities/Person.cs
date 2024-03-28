@@ -93,5 +93,18 @@ namespace PacientService.Entities
 
         [Display(Name = "Это врач")]
         public bool? IsVrach { get; set; } = false;
+
+        [Display(Name = "E-mail")]
+        public string? email { get; set; } = string.Empty;
+
+        [Display(Name = "Использовать Mail")]
+        public bool? usemail { get; set; } = false;
+
+        [Display(Name = "Телеграм (Имя пользователя)")]
+        public string? telegram { get; set; } = string.Empty;
+
+        [Display(Name = "Использовать Телеграм")]
+        public bool? usetelegram { get; set; } = false;
+
     }
 }

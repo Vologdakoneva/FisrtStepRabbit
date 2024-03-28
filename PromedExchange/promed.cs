@@ -7,6 +7,8 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Configuration;
+
 
 
 
@@ -16,13 +18,22 @@ namespace PromedExchange
     {
         protected string url = "https://rmisvo.cifromed35.ru";
         protected string? sess_id = "";
-        protected bool Logined = false;
+        public bool Logined = false;
         public string response = "";
         public string error_msg = "";
         JsonDocument? jsondoc = null;
         HttpWebResponse? Resp;
-        public Promed(bool needAsync)
+
+
+        private string _LoginName { get; set; }
+        private string _Password { get; set; }
+
+        
+        public Promed(bool needAsync, string LoginName, string Password)
         {
+            _LoginName = LoginName;
+            _Password = Password;
+
             if (!Logined)
             {
                 if (needAsync) {
@@ -124,8 +135,16 @@ namespace PromedExchange
         {
             var jsondoc = JsonDocument.Parse(response);
             JsonElement error_code = jsondoc.RootElement.GetProperty("error_code");
-            
-                JsonElement data = jsondoc.RootElement.GetProperty("data");
+            JsonElement data;
+            try
+            {
+                data = jsondoc.RootElement.GetProperty("data");
+            }
+            catch (Exception)
+            {
+                return new JsonElement();
+                
+            }
             return data;
             
         }
@@ -189,9 +208,8 @@ namespace PromedExchange
 
             if (sess_id == "")
             {
-
-                response = SendGet("/api/user/login?Login=SelivanovaAM&Password=Clinica_7");
-                var jsondoc = JsonDocument.Parse(response);
+                response = SendGet("/api/user/login?Login="+_LoginName+"&Password="+_Password); //SelivanovaAM&Password=Clinica_7
+                    var jsondoc = JsonDocument.Parse(response);
                 JsonElement error_code = jsondoc.RootElement.GetProperty("error_code");
                 if (error_code.GetInt32() == 0)
                 {
@@ -223,6 +241,7 @@ namespace PromedExchange
                     JsonElement error_code = jsondoc.RootElement.GetProperty("error_code");
                     if (error_code.GetInt32() == 0)
                     {
+                        sess_id = "";
                         Logined = false;
                     }
                 }

@@ -20,14 +20,16 @@ namespace PacientService
     {
         private readonly ISubscriber subscriber;
         private readonly IServiceScopeFactory serviceScopeFactory;
-        private readonly Promed promed = new Promed(false);
+        private readonly IConfiguration configuration;
+        private readonly Promed promed;
 
 
-        public PacientListener(ISubscriber subscriber, IServiceScopeFactory serviceScopeFactory) //, IPacientOperator pacientOperator
+        public PacientListener(ISubscriber subscriber, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration) //, IPacientOperator pacientOperator
         {
             this.subscriber = subscriber;
             this.serviceScopeFactory = serviceScopeFactory;
-
+            this.configuration = configuration;
+            this.promed = new Promed(false, configuration.GetConnectionString("cifromedLogin"), configuration.GetConnectionString("cifromedPassword"));
         }
 
 
