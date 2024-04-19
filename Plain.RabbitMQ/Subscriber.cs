@@ -94,4 +94,11 @@ namespace Plain.RabbitMQ
             _disposed = true;
         }
     }
+    public class SubscriberTask : Subscriber ,ISubscriber,ISubscriberTask
+    {
+        public SubscriberTask(IConnectionProvider connectionProvider, string exchange, string queue, string routingKey, string exchangeType, int timeToLive = 30000, ushort prefetchSize = 10) : base(connectionProvider, exchange, queue, routingKey, exchangeType, timeToLive, prefetchSize)
+        {
+        }
+    }
+
 }

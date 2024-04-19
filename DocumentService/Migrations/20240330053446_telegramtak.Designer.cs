@@ -3,6 +3,7 @@ using System;
 using DocumentService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DocumentService.Migrations
 {
     [DbContext(typeof(DocumentDbContext))]
-    partial class DocumentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240330053446_telegramtak")]
+    partial class telegramtak
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -104,29 +106,22 @@ namespace DocumentService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDALL"));
 
-                    b.Property<DateTime?>("DataFinish")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<DateTime>("DataTask")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("DataTaskPlan")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("DocLink")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Fio")
-                        .HasColumnType("text");
 
                     b.Property<string>("FioExec")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FioFinish")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Fiokey")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<long?>("IdFio")
@@ -137,6 +132,7 @@ namespace DocumentService.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("TextFinish")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("TextTask")
@@ -146,12 +142,15 @@ namespace DocumentService.Migrations
                     b.Property<string>("email")
                         .HasColumnType("text");
 
-                    b.Property<string>("errors")
-                        .HasColumnType("text");
-
                     b.Property<string>("ownertask")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool?>("sendedmail")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("sendedtelegram")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("successfully")
                         .HasColumnType("boolean");

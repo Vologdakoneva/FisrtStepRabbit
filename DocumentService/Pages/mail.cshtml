@@ -1,0 +1,36 @@
+﻿@page
+@model DocumentService.shablon.mailModel
+@{
+}
+
+
+
+@Model.userTask.DataTask.ToString("dd.MM.yyyy")
+@Model.userTask.ownertask  назначил Вам задачу
+<br />
+<br />
+<b>
+@Model.userTask.TextTask
+</b>
+<br />
+Срок исполнения  @Model.userTask.DataTaskPlan.ToString("dd.MM.yyyy")
+<br />
+@{
+    string Srochn="Срочность: ";
+    if (Model.userTask.PriorityTask == "2")
+    {
+        Srochn = Srochn + "в порядке очереди";
+    }
+    else
+    {
+        Srochn = Srochn + "первоочередная";
+    }
+}
+@Srochn
+<br />
+<br />
+@Html.Label("для присоединениия в телеграм:")
+<br />
+<a href="https://t.me/cherep7pol_bot"> Присоединится в телеграм</a>
+
+

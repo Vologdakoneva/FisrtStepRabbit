@@ -284,7 +284,7 @@ namespace DocumentService
                     string KodelistID = "";
                     string KodelistIDComplex = "";
 
-                    response = promed.SendGet("api/UslugaComplexMedService?MedService_id=" + 13090
+                    response = promed.SendGet("/api/UslugaComplexMedService?MedService_id=" + 13090
                                                + "&UslugaComplex_Code=" + docAnaliz.UetHead + "&ResponseFull=1");
                     if (promed.GetErrorCode())
                     {

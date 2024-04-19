@@ -9,6 +9,9 @@ using DocumentService;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddRazorPages();
+builder.Services.AddEndpointsApiExplorer();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -22,16 +25,25 @@ builder.Services.AddDbContext<DocumentDbContext>();
 string connString = builder.Configuration.GetConnectionString("RabbitMQ");
 
 builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider(connString));
+builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(),
+    "promed-exchange",
+ ExchangeType.Topic));
+
+
 builder.Services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
     "promed-exchange",
     "docs-queue",
     "NaAnaliz.*",
  ExchangeType.Topic));
-builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(),
-    "promed-exchange",
- ExchangeType.Topic));
-
 builder.Services.AddHostedService<NaAnalizListener>();
+
+
+builder.Services.AddSingleton<ISubscriberTask>(x => new SubscriberTask(x.GetService<IConnectionProvider>(),
+    "promed-exchange",
+    "Task-queue",
+    "Task.*",
+ ExchangeType.Topic));
+builder.Services.AddHostedService<TaskListener>();
 
 
 builder.Services.AddControllers().AddJsonOptions(x =>
@@ -46,6 +58,7 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 });
 
 builder.Services.AddScoped<IDocAnaliz, DocAnalizRepository>();
+builder.Services.AddScoped<ITask, TaskRepository>();
 
 
 var app = builder.Build();
@@ -57,7 +70,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthorization();
+
 
 app.MapControllers();
 
@@ -68,5 +81,15 @@ using (var scope = app.Services.CreateScope())
     var context = serviceUp.GetRequiredService<DocumentDbContext>();
     context.Database.Migrate();
 }
+app.UseStaticFiles();
 
+app.UseRouting();
+
+
+app.UseEndpoints(endpoints => {
+    endpoints.MapRazorPages();
+    endpoints.MapControllerRoute("default", "api/{controller=Home}/{action=Index}/{id?}");
+    endpoints.MapControllers();
+});
+app.MapControllers();
 app.Run();

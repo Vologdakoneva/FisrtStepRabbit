@@ -21,7 +21,8 @@ namespace DocumentService.Data
             optionsBuilder.UseNpgsql(configuration.GetConnectionString("PostgreSQL"));
         }
 
-        public  DbSet<DocAnaliz> DocAnaliz { get; set; }
+        public DbSet<DocAnaliz> DocAnaliz { get; set; }
+        public DbSet<UserTasks> UserTask { get; set; }
 
     }
 }

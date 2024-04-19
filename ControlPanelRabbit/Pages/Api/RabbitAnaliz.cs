@@ -65,12 +65,19 @@ namespace ControlPanelRabbit.Pages.Api
                 if (item != "") { 
                 DocItems docItem = new DocItems();
                 string[] StrItem = item.Split("@");
+                        try
+                        {
+
                 docItem.DocLink = gDocLink;
                 docItem.AnalizText = StrItem[0].Replace('/', '.'); ;
                 docItem.norma = StrItem[1].Replace('/', '.'); ;
                 docItem.result = StrItem[2].Replace('/','.');
                 docItem.uet = StrItem[3];
-                docItems.Add(docItem);
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        docItems.Add(docItem);
                 }
             }
             string AnalizString = JsonConvert.SerializeObject(docItems);

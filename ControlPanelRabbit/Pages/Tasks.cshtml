@@ -1,0 +1,116 @@
+﻿@page
+@using NonFactors.Mvc.Grid;
+@using DevExtreme.AspNet.Mvc;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@model Tasks
+
+
+
+
+@{
+    ViewData["Title"] = "Задачи";
+}
+<h2>@ViewData["Title"]</h2>
+
+<p>Состояние обмена.</p>
+
+
+@(Html.DevExtreme().DataGrid()
+    .ID("gridContainer")
+    .ShowBorders(true)
+    .DataSource(Model.UserTask)
+    .KeyExpr("DocLink")
+    .ShowBorders(true)
+    .RemoteOperations(false)
+    .AllowColumnReordering(true)
+    .AllowColumnResizing(true)
+    .Scrolling(scrolling => scrolling.ColumnRenderingMode(GridColumnRenderingMode.Virtual))
+    .ColumnAutoWidth(true)
+    .RowAlternationEnabled(true)
+    .Export(e => e.Enabled(true).AllowExportSelectedData(true))
+    .OnExporting("exporting")
+    .FilterPanel(f => f.Visible(true))
+    .HeaderFilter(h => h.Visible(true))
+     .FilterRow(filterRow => filterRow
+            .Visible(true)
+            .ApplyFilter(GridApplyFilterMode.Auto)
+        )
+    .Columns(c =>
+    {
+        c.Add().DataField("successfully").Width(80).Caption("Завершена");
+        c.Add().DataField("DataTask").Caption("Дата.постановки").Width(135).DataType(GridColumnDataType.DateTime);
+        c.Add().DataField("DataTaskPlan").Caption("Срок").Width(135).DataType(GridColumnDataType.DateTime);
+        c.Add().DataField("TextTask").Caption("Задача");
+        c.Add().DataField("FioFinish").Caption("Завершил");
+    }
+    )
+    .MasterDetail(m => m
+        .Enabled(true)
+        .Template(new TemplateName("gridContainer-details"))
+       )
+)
+
+@using (Html.DevExtreme().NamedTemplate("gridContainer-details"))
+{
+    @(Html.DevExtreme().TabPanel()
+            .Items(items =>
+            {
+                items.Add()
+                    .Title("Анализы")
+                    .Template(new TemplateName("gridContainer-details-tab1Template"))
+                     .Option("tabExtras", new { DocLink = new JS("data.DocLink") });
+
+                items.Add()
+                    .Title("Ошибки")
+                    .Template(new TemplateName("gridContainer-details-tab2Template"))
+                    .Option("tabExtras", new { DocLink = new JS("data.DocLink") });
+            })
+        )
+}
+
+@using (Html.DevExtreme().NamedTemplate("gridContainer-details-tab1Template"))
+{
+    @(Html.DevExtreme().DataGrid()
+            .ID(new JS("'gridContainer-orderHistoryGrid-' + tabExtras.DocLink"))
+            .ShowBorders(true)
+            .DataSource(d => d.Mvc()
+                    .Controller("..")
+                    .LoadAction("DocAnalizItems")
+                     .LoadParams(new { DocLink = new JS("tabExtras.DocLink")  })
+                    )
+            .Paging(p => p.PageSize(5))
+            .Columns(columns =>
+            {
+                    columns.Add().DataField("AnalizText").Caption("Анализ").Width(200);
+                    columns.Add().DataField("norma").Caption("Норма");
+                    columns.Add().DataField("result").Caption("Результат");
+                    columns.Add().DataField("uet").Caption("код УЕТ");
+                    columns.Add().DataField("kod").Caption("код");
+            })
+
+        )
+}
+@using (Html.DevExtreme().NamedTemplate("gridContainer-details-tab2Template"))
+{
+    @(Html.DevExtreme().DataGrid()
+            .ID(new JS("'gridContainer-orderHistoryGrid2-' + tabExtras.DocLink"))
+            .ShowBorders(true)
+            .DataSource(d => d.Mvc()
+                    .Controller("..")
+                    .LoadAction("DocAnalizErrors")
+                    .LoadParams(new { DocLink = new JS("tabExtras.DocLink") })
+                    )
+            .Paging(p => p.PageSize(5))
+            .Columns(columns =>
+            {
+                    columns.Add().DataField("ErrorSource").Caption("Источник").Width(100);
+                    columns.Add().DataField("ErrorText").Caption("Текст");
+            })
+
+        )
+}
+
+
+
+<script type="text/javascript" src="~/js/mvc-grid/mvc-grid_rus.js"></script>
+
