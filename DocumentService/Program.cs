@@ -14,7 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -22,6 +22,21 @@ builder.Services.AddSwaggerGen();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddDbContext<DocumentDbContext>();
 
+
+
+builder.Services.AddControllers().AddJsonOptions(x =>
+{
+    // Serialize enums as strings in api responses (e.g. Gender)
+    x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+    x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+
+    // Ignore possible object cycles
+    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
+builder.Services.AddScoped<IDocAnaliz, DocAnalizRepository>();
+builder.Services.AddScoped<ITask, TaskRepository>();
 string connString = builder.Configuration.GetConnectionString("RabbitMQ");
 
 builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider(connString));
@@ -46,20 +61,6 @@ builder.Services.AddSingleton<ISubscriberTask>(x => new SubscriberTask(x.GetServ
 builder.Services.AddHostedService<TaskListener>();
 
 
-builder.Services.AddControllers().AddJsonOptions(x =>
-{
-    // Serialize enums as strings in api responses (e.g. Gender)
-    x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
-    x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-
-    // Ignore possible object cycles
-    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});
-
-builder.Services.AddScoped<IDocAnaliz, DocAnalizRepository>();
-builder.Services.AddScoped<ITask, TaskRepository>();
-
 
 var app = builder.Build();
 
@@ -72,7 +73,7 @@ if (app.Environment.IsDevelopment())
 
 
 
-app.MapControllers();
+//app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -86,10 +87,13 @@ app.UseStaticFiles();
 app.UseRouting();
 
 
-app.UseEndpoints(endpoints => {
+app.UseEndpoints(endpoints =>
+{
     endpoints.MapRazorPages();
     endpoints.MapControllerRoute("default", "api/{controller=Home}/{action=Index}/{id?}");
     endpoints.MapControllers();
 });
 app.MapControllers();
+
+
 app.Run();
