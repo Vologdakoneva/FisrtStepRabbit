@@ -155,10 +155,16 @@ namespace DocumentService
                                 var me = botClient.GetMeAsync().Result;
                                 var upd = botClient.GetUpdatesAsync().Result;
 
-                                ///UserTask.telegram = "vologdakoneva";
+                                    ///UserTask.telegram = "vologdakoneva";
 
-                                Update? update = upd.FirstOrDefault(p => p.Message.Chat.Username.ToUpper() == UserTask.telegram.Replace("@", "").ToUpper());
-
+                                    //Update? update = upd.FirstOrDefault(p => p.Message.Chat.Username.ToUpper() == UserTask.telegram.Replace("@", "").ToUpper());
+                                    Update? update = new Update();
+                                    foreach (var item in upd)
+                                    {
+                                        if (item.Message.Chat.Username != null && item.Message.Chat.Username.ToUpper() == UserTask.telegram.Replace("@", "").ToUpper())
+                                        { update = item; break; }
+                                    } 
+                                        
 
                                 if (update != null)
                                 {
