@@ -31,6 +31,7 @@ namespace DocumentService
         private readonly IConfiguration configuration;
         private readonly IServer server;
         private readonly Promed promed;
+        private readonly Telegram.Bot.TelegramBotClient botClient;
 
         public TaskListener(ISubscriberTask subscriber, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, IServer server) //, IPacientOperator pacientOperator
         {
@@ -39,6 +40,8 @@ namespace DocumentService
             this.configuration = configuration;
             this.server = server;
             this.promed = new Promed(false, configuration.GetConnectionString("cifromedLogin"), configuration.GetConnectionString("cifromedPassword"));
+            var botToken = configuration.GetConnectionString("TELEGRAMTOKEN"); // "7131444788:AAF_IlCT5LDWKhHq8ygOzZE2lShPwPSN_dU";
+            this.botClient = new Telegram.Bot.TelegramBotClient(botToken);
 
         }
 
@@ -149,8 +152,6 @@ namespace DocumentService
                             {
                                 addtomessage = addtomessage + " Отправка телеграм ";
                                 Console.WriteLine(" Отправка телеграм " + "\n");
-                                var botToken = configuration.GetConnectionString("TELEGRAMTOKEN"); // "7131444788:AAF_IlCT5LDWKhHq8ygOzZE2lShPwPSN_dU";
-                                Telegram.Bot.TelegramBotClient botClient = new Telegram.Bot.TelegramBotClient(botToken);
 
                                 var me = botClient.GetMeAsync().Result;
                                 var upd = botClient.GetUpdatesAsync().Result;
