@@ -37,6 +37,8 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 
 builder.Services.AddScoped<IDocAnaliz, DocAnalizRepository>();
 builder.Services.AddScoped<ITask, TaskRepository>();
+builder.Services.AddScoped<ItelegramChat, telegramChatReposytory>();
+
 string connString = builder.Configuration.GetConnectionString("RabbitMQ");
 
 builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider(connString));

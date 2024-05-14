@@ -23,6 +23,7 @@ namespace DocumentService.Data
 
         public DbSet<DocAnaliz> DocAnaliz { get; set; }
         public DbSet<UserTasks> UserTask { get; set; }
+        public DbSet<telegramChat> ChatId { get; set; }
 
     }
 }

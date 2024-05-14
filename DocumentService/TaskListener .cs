@@ -12,14 +12,23 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Telegram.Bot;
+using Telegram.Bot.Args;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using System.Net.Mail;
 using System.Diagnostics.CodeAnalysis;
-using Telegram.Bot.Types;
+
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
+using Telegram.Bot.Polling;
+using System.Threading;
+using System.Collections;
+using DocumentService.Repositories.Interfaces;
+using DocumentService.Repositories.Entities;
 
 
 namespace DocumentService
@@ -32,16 +41,29 @@ namespace DocumentService
         private readonly IServer server;
         private readonly Promed promed;
         private readonly Telegram.Bot.TelegramBotClient botClient;
+        private readonly ItelegramChat? itelegramChat;
 
-        public TaskListener(ISubscriberTask subscriber, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, IServer server) //, IPacientOperator pacientOperator
+        public TaskListener(ISubscriberTask subscriber, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, IServer server) //  , ItelegramChatId itelegramChatId  , IPacientOperator pacientOperator
         {
             this.subscriber = subscriber;
             this.serviceScopeFactory = serviceScopeFactory;
             this.configuration = configuration;
             this.server = server;
             this.promed = new Promed(false, configuration.GetConnectionString("cifromedLogin"), configuration.GetConnectionString("cifromedPassword"));
+            ////this.itelegramChat = itelegramChat;
             var botToken = configuration.GetConnectionString("TELEGRAMTOKEN"); // "7131444788:AAF_IlCT5LDWKhHq8ygOzZE2lShPwPSN_dU";
             this.botClient = new Telegram.Bot.TelegramBotClient(botToken);
+            ReceiverOptions receiverOptions = new()
+            {
+                AllowedUpdates = Array.Empty<UpdateType>() // receive all update types except ChatMember related updates
+            };
+            using CancellationTokenSource cts = new();
+            botClient.StartReceiving(
+            updateHandler: HandleUpdateAsync,
+            pollingErrorHandler: HandlePollingErrorAsync,
+            receiverOptions: receiverOptions,
+            cancellationToken: cts.Token
+        );
 
         }
 
@@ -153,22 +175,25 @@ namespace DocumentService
                                 addtomessage = addtomessage + " Отправка телеграм ";
                                 Console.WriteLine(" Отправка телеграм " + "\n");
 
-                                var me = botClient.GetMeAsync().Result;
-                                var upd = botClient.GetUpdatesAsync().Result;
+                                    //var me = botClient.GetMeAsync().Result;
+                                    //var upd = botClient.GetUpdatesAsync().Result;
 
-                                    ///UserTask.telegram = "vologdakoneva";
+                                    //    ///UserTask.telegram = "vologdakoneva";
 
-                                    //Update? update = upd.FirstOrDefault(p => p.Message.Chat.Username.ToUpper() == UserTask.telegram.Replace("@", "").ToUpper());
-                                    Update? update = new Update();
-                                    foreach (var item in upd)
+                                    //    //Update? update = upd.FirstOrDefault(p => p.Message.Chat.Username.ToUpper() == UserTask.telegram.Replace("@", "").ToUpper());
+                                    //    Update? update = new Update();
+                                    //    foreach (var item in upd)
+                                    //    {
+                                    //        if (item.Message.Chat.Username != null && item.Message.Chat.Username.ToUpper() == UserTask.telegram.Replace("@", "").ToUpper())
+                                    //        { update = item; break; }
+                                    //    } 
+
+
+                                    ///if (update != null)
+                                    telegramChat? telegramChat = dbContext.ChatId.Where(p => p.Username.ToLower() == UserTask.telegram.Replace("@", "").ToLower()).FirstOrDefault();
+
+                                    if (telegramChat != null)
                                     {
-                                        if (item.Message.Chat.Username != null && item.Message.Chat.Username.ToUpper() == UserTask.telegram.Replace("@", "").ToUpper())
-                                        { update = item; break; }
-                                    } 
-                                        
-
-                                if (update != null)
-                                {
                                     addtomessage = addtomessage + " Чат найден ";
                                     string Telegamesage = UserTask.DataTask.ToString("dd-MM-yyy") + " " + UserTask.ownertask + " назначил Вам зачачу \n" +
                                                           "<b>" + UserTask.TextTask + "</b>" + "\n" +
@@ -177,7 +202,7 @@ namespace DocumentService
 
 
 
-                                    botClient.SendTextMessageAsync(update.Message.Chat.Id, Telegamesage, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
+                                    botClient.SendTextMessageAsync(telegramChat.ChatId, Telegamesage, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
                                 }
 
                             }
@@ -237,6 +262,48 @@ namespace DocumentService
             Console.WriteLine(" Сообщение обработано  " + "\n");
 
             return true;
+        }
+
+        private async Task HandlePollingErrorAsync(ITelegramBotClient client, Exception exception, CancellationToken token)
+        {
+            return; 
+        }
+
+        private async Task HandleUpdateAsync(ITelegramBotClient client, Update update, CancellationToken token)
+        {
+            // Only process Message updates: https://core.telegram.org/bots/api#message
+            if (update.Message is not { } message)
+                return;
+            // Only process text messages
+            if (message.Text is not { } messageText)
+                return;
+
+            var chatId = message.Chat.Id;
+            ///start
+            
+            Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+            using (var scope = serviceScopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<DocumentDbContext>();
+                telegramChat? telegramChat = dbContext.ChatId.Where(p => p.Username.ToLower() == message.Chat.Username.ToLower()).FirstOrDefault();
+
+                if (telegramChat==null )
+                {
+                    telegramChat telegramChatone = new telegramChat();
+                    telegramChatone.Username = message.Chat.Username;
+                    telegramChatone.ChatId = message.Chat.Id.ToString();
+                    dbContext.Entry(telegramChatone).State = EntityState.Modified;
+                    dbContext.ChatId.Attach(telegramChatone);
+                    dbContext.ChatId.Add(telegramChatone);
+                    dbContext.SaveChanges();
+                }
+                if (message.Text.ToLower() == "/start")
+                {
+                    string Telegamesage = " Добро пожаловать  \n" +
+                                            "в чат ЧГП № 7";
+                    await botClient.SendTextMessageAsync(chatId, Telegamesage, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
+                }
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
