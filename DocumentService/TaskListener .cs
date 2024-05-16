@@ -195,7 +195,7 @@ namespace DocumentService
                                     if (telegramChat != null)
                                     {
                                     addtomessage = addtomessage + " Чат найден ";
-                                    string Telegamesage = UserTask.DataTask.ToString("dd-MM-yyy") + " " + UserTask.ownertask + " назначил Вам зачачу \n" +
+                                    string Telegamesage = UserTask.DataTask.ToString("dd-MM-yyy") + " " + UserTask.ownertask + " назначил Вам задачу \n" +
                                                           "<b>" + UserTask.TextTask + "</b>" + "\n" +
                                                           "Срок исполнения " + UserTask.DataTaskPlan.ToString("dd-MM-yyy") + "\n" +
                                                           " Срочность: " + (UserTask.PriorityTask == "2" ? "в порядке очереди" : "первоочередная");
