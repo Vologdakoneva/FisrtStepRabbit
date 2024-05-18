@@ -55,6 +55,7 @@ namespace ControlPanelRabbit.Pages.Api
             userTask.FioExec = FioExec;
             userTask.DataTask = DataTask == null ? DateTime.Now.Date : (DateTime)Convert.ToDateTime(DataTask);
             userTask.DataTaskPlan = DataTaskPlan == null ? DateTime.Now.Date : (DateTime)Convert.ToDateTime(DataTaskPlan);
+            userTask.DataFinish = DataFinish == null ? DateTime.Now.Date : (DateTime)Convert.ToDateTime(DataFinish);
             userTask.PriorityTask = PriorityTask;
             userTask.FioExec = FioExec;
             userTask.FioFinish = FioFinish;

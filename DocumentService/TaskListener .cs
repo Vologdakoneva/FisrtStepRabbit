@@ -143,37 +143,38 @@ namespace DocumentService
                     }
 
 
-                    //UserTask.IdFio = person.IdPromedPerson;
-                    //dbContext.SaveChanges();
+                        //UserTask.IdFio = person.IdPromedPerson;
+                        //dbContext.SaveChanges();
 
 
-                    if (!UserTask.successfully)
-                    {
-                        ICollection<string> addresses = server.Features.Get<IServerAddressesFeature>().Addresses;
-                        string AppPath = addresses.FirstOrDefault();
-                        string LocalPath = AppContext.BaseDirectory;
+                        if (!UserTask.successfully)
+                        {
+                            ICollection<string> addresses = server.Features.Get<IServerAddressesFeature>().Addresses;
+                            string AppPath = addresses.FirstOrDefault();
+                            string LocalPath = AppContext.BaseDirectory;
 
-                            Console.WriteLine(" uri " +  AppPath + "/Mail?UserTaskJSON=" +"\n");
+                            Console.WriteLine(" uri " + AppPath + "/Mail?UserTaskJSON=" + "\n");
                             AppPath = @"http://Localhost:23762/";
-                            if (AppPath.EndsWith(@"/")) 
+                            if (AppPath.EndsWith(@"/"))
                             { AppPath = AppPath.Remove(AppPath.Length - 1); }
 
-                            foreach (var address in addresses) {
-                                Errors = Errors + " " +address; // AppPath + "/Mail?UserTaskJSON=" + JsonConvert.SerializeObject(UserTask);
-                                 }
+                            foreach (var address in addresses)
+                            {
+                                Errors = Errors + " " + address; // AppPath + "/Mail?UserTaskJSON=" + JsonConvert.SerializeObject(UserTask);
+                            }
 
-                                string BodyHTML = GetAsync(AppPath + "/Mail?UserTaskJSON=" + JsonConvert.SerializeObject(UserTask));
+                            string BodyHTML = GetAsync(AppPath + "/Mail?UserTaskJSON=" + JsonConvert.SerializeObject(UserTask));
 
                             string addtomessage = "";
 
                             try
                             {
 
-                            if (UserTask.usetelegram == null) { UserTask.usetelegram = false; };
-                            if ((bool)UserTask.usetelegram)
-                            {
-                                addtomessage = addtomessage + " Отправка телеграм ";
-                                Console.WriteLine(" Отправка телеграм " + "\n");
+                                if (UserTask.usetelegram == null) { UserTask.usetelegram = false; };
+                                if ((bool)UserTask.usetelegram)
+                                {
+                                    addtomessage = addtomessage + " Отправка телеграм ";
+                                    Console.WriteLine(" Отправка телеграм " + "\n");
 
                                     //var me = botClient.GetMeAsync().Result;
                                     //var upd = botClient.GetUpdatesAsync().Result;
@@ -194,18 +195,18 @@ namespace DocumentService
 
                                     if (telegramChat != null)
                                     {
-                                    addtomessage = addtomessage + " Чат найден ";
-                                    string Telegamesage = UserTask.DataTask.ToString("dd-MM-yyy") + " " + UserTask.ownertask + " назначил Вам задачу \n" +
-                                                          "<b>" + UserTask.TextTask + "</b>" + "\n" +
-                                                          "Срок исполнения " + UserTask.DataTaskPlan.ToString("dd-MM-yyy") + "\n" +
-                                                          " Срочность: " + (UserTask.PriorityTask == "2" ? "в порядке очереди" : "первоочередная");
+                                        addtomessage = addtomessage + " Чат найден ";
+                                        string Telegamesage = UserTask.DataTask.ToString("dd-MM-yyy") + " " + UserTask.ownertask + " назначил Вам задачу \n" +
+                                                              "<b>" + UserTask.TextTask + "</b>" + "\n" +
+                                                              "Срок исполнения " + UserTask.DataTaskPlan.ToString("dd-MM-yyy") + "\n" +
+                                                              " Срочность: " + (UserTask.PriorityTask == "2" ? "в порядке очереди" : "первоочередная");
 
 
 
-                                    botClient.SendTextMessageAsync(telegramChat.ChatId, Telegamesage, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
+                                        botClient.SendTextMessageAsync(telegramChat.ChatId, Telegamesage, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
+                                    }
+
                                 }
-
-                            }
                             }
                             catch (Exception ex)
                             {
@@ -213,35 +214,57 @@ namespace DocumentService
                             }
 
                             if (UserTask.usemail == null) { UserTask.usemail = false; };
-                        if ((bool)UserTask.usemail )
-                        {
+                            if ((bool)UserTask.usemail)
+                            {
                                 Console.WriteLine(" Отправка майл " + "\n");
                                 SmtpClient smtpClient = new SmtpClient(configuration.GetConnectionString("SMTP"), 25); //25 465
 
-                            smtpClient.Credentials = new System.Net.NetworkCredential(configuration.GetConnectionString("SMTPUSER"), configuration.GetConnectionString("SMTPPASSWORD"));
-                            //smtpClient.UseDefaultCredentials = true;
-                            //smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-                            smtpClient.EnableSsl = true;
-                            MailMessage mail = new MailMessage();
-                            mail.IsBodyHtml = true;
+                                smtpClient.Credentials = new System.Net.NetworkCredential(configuration.GetConnectionString("SMTPUSER"), configuration.GetConnectionString("SMTPPASSWORD"));
+                                //smtpClient.UseDefaultCredentials = true;
+                                //smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                                smtpClient.EnableSsl = true;
+                                MailMessage mail = new MailMessage();
+                                mail.IsBodyHtml = true;
 
 
-                            mail.Body = BodyHTML; // BodyHTML;  
+                                mail.Body = BodyHTML; // BodyHTML;  
 
-                                
-                                
+
+
 
                                 //Setting From , To and CC
                                 mail.From = new MailAddress(configuration.GetConnectionString("SMTPUSER"), "Администратор");
                                 mail.To.Add(new MailAddress(UserTask.email));
                                 mail.Subject = "Задача"; //configuration.GetConnectionString("SMTPSUBJECT");
-                            
+
 
                                 smtpClient.Send(mail);
-                            mail.Dispose();
-                            smtpClient.Dispose();
+                                mail.Dispose();
+                                smtpClient.Dispose();
+                            }
                         }
+                        else {
+                            
+                                if (UserTask.usetelegram == null) { UserTask.usetelegram = false; };
+                                if ((bool)UserTask.usetelegram)
+                                {
+                                telegramChat? telegramChat = dbContext.ChatId.Where(p => p.Username.ToLower() == UserTask.telegram.Replace("@", "").ToLower()).FirstOrDefault();
+
+                                if (telegramChat != null)
+                                {
+                                    string Telegamesage = UserTask.FioExec+ " \n" + 
+                                                          "Задача завершена.  " + UserTask.TextTask + " \n Спасибо.";
+
+
+
+                                    botClient.SendTextMessageAsync(telegramChat.ChatId, Telegamesage, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
+                                }
+                            
+                            }
+                            
+
                         }
+
                     }
                 }
                 catch (Exception ee)
