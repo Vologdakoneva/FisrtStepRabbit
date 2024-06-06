@@ -137,7 +137,7 @@ namespace DocumentService
                                                  //person = response;
                                                  //dbContext.Entry(person).CurrentValues.SetValues(response);
                                                  //dbContext.Entry(person).State = EntityState.Modified;
-                        dbContext.Entry(UserTask).Property("successfully").CurrentValue = responsedoc.DataFinish != null;
+                        dbContext.Entry(UserTask).Property("successfully").CurrentValue = responsedoc.FioFinish != null;
                         dbContext.SaveChanges();
 
                     }
@@ -145,7 +145,8 @@ namespace DocumentService
 
                         //UserTask.IdFio = person.IdPromedPerson;
                         //dbContext.SaveChanges();
-
+                        if (UserTask.TextTask == null)
+                            return true;
 
                         if (!UserTask.successfully)
                         {
@@ -162,8 +163,11 @@ namespace DocumentService
                             {
                                 Errors = Errors + " " + address; // AppPath + "/Mail?UserTaskJSON=" + JsonConvert.SerializeObject(UserTask);
                             }
-
-                            string BodyHTML = GetAsync(AppPath + "/Mail?UserTaskJSON=" + JsonConvert.SerializeObject(UserTask));
+                            /// Convert.ToDateTime(UserTask.DataFinish);
+                            /// 
+                            string addprm = JsonConvert.SerializeObject(UserTask);
+                            addprm = addprm.Replace("03:00", "");
+                            string BodyHTML = GetAsync(AppPath + "/Mail?UserTaskJSON=" + addprm);
 
                             string addtomessage = "";
 

@@ -28,7 +28,7 @@ namespace ControlPanelRabbit.Pages.Api
             [FromQuery(Name = "FioFinish")] string? FioFinish,
             [FromQuery(Name = "TextFinish")] string? TextFinish,
             [FromQuery(Name = "DocLink")] string DocLink,
-            [FromQuery(Name = "TextTask")] string TextTask,
+            [FromQuery(Name = "TextTask")] string? TextTask,
             [FromQuery(Name = "ownertask")] string? ownertask,
             [FromQuery(Name = "Fiokey")] string? Fiokey,
             [FromQuery(Name = "IdFio")] Int64? IdFio,
@@ -43,6 +43,10 @@ namespace ControlPanelRabbit.Pages.Api
 
             )
            {
+            if (TextTask == null)
+                return new string[] { "Оработка", "Сообщение Задачи нет. " };
+            
+
             UserTasks userTask = new UserTasks();
 
             Guid gDocLink;

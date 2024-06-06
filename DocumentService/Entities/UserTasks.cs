@@ -29,13 +29,13 @@ namespace DocumentService.Entities
         public String? FioFinish { get; set; } = string.Empty;
 
         [Display(Name = "Дата выполнения")]
-        public DateTime? DataFinish { get; set; }
+        public DateTime? DataFinish { get; set; } =  DateTime.Now;
 
         [Display(Name = "Результат")]
         public String? TextFinish { get; set; } = string.Empty;
         public Guid DocLink { get; set; }
         [Display(Name = "Задача")]
-        public String TextTask { get; set; } = string.Empty;
+        public String? TextTask { get; set; } = string.Empty;
 
         [Display(Name = "Автор / создатель")]
         public String ownertask { get; set; } = string.Empty;

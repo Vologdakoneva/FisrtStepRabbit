@@ -35,7 +35,7 @@ namespace ControlPanelRabbits
         public DateTime? DataFinish { get; set; }
         public Guid DocLink { get; set; }
         [Display(Name = "Задача")]
-        public String TextTask { get; set; } = string.Empty;
+        public String? TextTask { get; set; } = string.Empty;
 
         [Display(Name = "Автор / создатель")]
         public String ownertask { get; set; } = string.Empty;
