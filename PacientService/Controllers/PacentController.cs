@@ -26,12 +26,12 @@ namespace PacientService.Controllers
             this.publisher = publisher;
         }
         // GET: api/<PacientController>
-        [HttpGet]
-        public IQueryable<Person> Get()
+        [HttpGet( "{Snils},{BirthDay}")]
+        public IQueryable<Person> Get(string snils, DateTime BirthDay)
         {
             //Promed pormed = new Promed();
             //pormed.SendGet("");
-            return Person.GetPersons(); //new string[] { "value1", "value2" };
+            return Person.GetPersonsиеBtSnils(snils, BirthDay); //new string[] { "value1", "value2" };
         }
 
         // GET api/<PacientController>/5

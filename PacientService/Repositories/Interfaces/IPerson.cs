@@ -5,10 +5,11 @@ namespace PacientService.Repositories.Interfaces
 {
     public interface IPerson
     {
-            IQueryable<Person> GetPersons();
-            Person GetPersonByEntity(Guid entity);
-            void SavePersons(Person entity);
-            void DeletePersons(Guid GuidPerson);
+        IQueryable<Person> GetPersons();
+        IQueryable<Person> GetPersonsиеBtSnils(string snils, DateTime datarogd);
+        Person GetPersonByEntity(Guid entity);
+        void SavePersons(Person entity);
+        void DeletePersons(Guid GuidPerson);
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MobileApp.Entities;
 
 namespace MobileApp.Data
 {
@@ -19,5 +20,6 @@ namespace MobileApp.Data
             optionsBuilder.UseNpgsql(_configuration.GetConnectionString("PostgreSQL"));
 
         }
+        public DbSet<UserApp> UsersApp { get; set; }
     }
 }

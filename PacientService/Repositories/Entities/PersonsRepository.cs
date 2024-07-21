@@ -36,6 +36,11 @@ namespace PacientService.Repositories.Entities
             return (IQueryable<Person>)context.Person.OrderByDescending(p=>p.DateChangePerson);
         }
 
+        public IQueryable<Person> GetPersonsиеBtSnils(string snils, DateTime datarogd)
+        {
+            return (IQueryable<Person>)context.Person.Where(p=>p.SnilsPerson==snils && p.birthDayPerson== datarogd);
+        }
+
         public void SavePersons(Person entity)
         {
             if (entity.IDALL == default)
