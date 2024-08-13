@@ -18,6 +18,9 @@ namespace ServiceTask
         
         [System.ServiceModel.OperationContractAttribute(Action="report#Task:GetAllTask", ReplyAction="*")]
         System.Threading.Tasks.Task<ServiceTask.GetAllTaskResponse> GetAllTaskAsync(ServiceTask.GetAllTaskRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="report#Task:SaveTask", ReplyAction="*")]
+        System.Threading.Tasks.Task<ServiceTask.SaveTaskResponse> SaveTaskAsync(ServiceTask.SaveTaskRequest request);
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -92,6 +95,86 @@ namespace ServiceTask
         }
     }
     
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.2.0-preview1.23462.5")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class SaveTaskRequest
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="SaveTask", Namespace="report", Order=0)]
+        public ServiceTask.SaveTaskRequestBody Body;
+        
+        public SaveTaskRequest()
+        {
+        }
+        
+        public SaveTaskRequest(ServiceTask.SaveTaskRequestBody Body)
+        {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.2.0-preview1.23462.5")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="report")]
+    public partial class SaveTaskRequestBody
+    {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string Datatask;
+        
+        public SaveTaskRequestBody()
+        {
+        }
+        
+        public SaveTaskRequestBody(string Datatask)
+        {
+            this.Datatask = Datatask;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.2.0-preview1.23462.5")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class SaveTaskResponse
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="SaveTaskResponse", Namespace="report", Order=0)]
+        public ServiceTask.SaveTaskResponseBody Body;
+        
+        public SaveTaskResponse()
+        {
+        }
+        
+        public SaveTaskResponse(ServiceTask.SaveTaskResponseBody Body)
+        {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.2.0-preview1.23462.5")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="report")]
+    public partial class SaveTaskResponseBody
+    {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string @return;
+        
+        public SaveTaskResponseBody()
+        {
+        }
+        
+        public SaveTaskResponseBody(string @return)
+        {
+            this.@return = @return;
+        }
+    }
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.2.0-preview1.23462.5")]
     public interface TaskPortTypeChannel : ServiceTask.TaskPortType, System.ServiceModel.IClientChannel
     {
@@ -146,6 +229,20 @@ namespace ServiceTask
             ServiceTask.GetAllTaskRequest inValue = new ServiceTask.GetAllTaskRequest();
             inValue.Body = new ServiceTask.GetAllTaskRequestBody();
             return ((ServiceTask.TaskPortType)(this)).GetAllTaskAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<ServiceTask.SaveTaskResponse> ServiceTask.TaskPortType.SaveTaskAsync(ServiceTask.SaveTaskRequest request)
+        {
+            return base.Channel.SaveTaskAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<ServiceTask.SaveTaskResponse> SaveTaskAsync(string Datatask)
+        {
+            ServiceTask.SaveTaskRequest inValue = new ServiceTask.SaveTaskRequest();
+            inValue.Body = new ServiceTask.SaveTaskRequestBody();
+            inValue.Body.Datatask = Datatask;
+            return ((ServiceTask.TaskPortType)(this)).SaveTaskAsync(inValue);
         }
         
         public virtual System.Threading.Tasks.Task OpenAsync()

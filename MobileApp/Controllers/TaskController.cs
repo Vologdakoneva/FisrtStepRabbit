@@ -36,10 +36,21 @@ namespace MobileApp.Controllers
         }
 
         // GET api/<TakController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{taskone}")]
+        public string Get(string taskone)
         {
-            return "value";
+            BasicHttpBinding myBinding = new BasicHttpBinding();
+            myBinding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
+            myBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
+
+            EndpointAddress ea = new EndpointAddress("http://192.168.3.150:8080/ElPol_report_2/WS/Task/1cws/SaveTask/" + taskone);
+            TaskPortTypeClient Service = new TaskPortTypeClient(myBinding, ea);
+            Service.ClientCredentials.UserName.UserName = "IIS_USER";
+            Service.ClientCredentials.UserName.Password = "457970";
+            var ListTask = Service.SaveTaskAsync(taskone).Result;
+
+            
+            return "Ok";
         }
 
         // POST api/<TakController>

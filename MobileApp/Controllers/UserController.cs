@@ -43,6 +43,7 @@ namespace MobileApp.Controllers
         [HttpGet("{id}")]
         public UserApp Get(string id)
         {
+            Console.WriteLine(" Сообщение " + id + "\n");
             return users.GetUserAppByPhone(id); 
         }
         [HttpGet("{snils},{datar}")]

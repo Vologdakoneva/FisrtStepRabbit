@@ -20,15 +20,22 @@ namespace MobileApp.EntitiesRealiz
 
         public IQueryable<UserApp> GetUsers()
         {
-            return (IQueryable<UserApp>)context.UsersApp;
+            var usr = (IQueryable<UserApp>)context.UsersApp;
+            foreach (var userApps in usr)
+            {
+                userApps.password = EncryptionHelper.Encrypt(userApps.password);
+            }
+            return (IQueryable<UserApp>)usr;
         }
 
         public UserApp GetUserAppByPhone(string phonenumber)
         {
+            
             UserApp? userapp = context.UsersApp.Where(p => p.phone == phonenumber).FirstOrDefault();
             if (userapp == null) { return new UserApp(); }
             else
             {
+                userapp.password = EncryptionHelper.Encrypt(userapp.password);
                 if (userapp.phone != phonenumber)
                     return new UserApp();
                 else
