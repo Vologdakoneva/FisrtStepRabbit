@@ -1,7 +1,7 @@
 {
   "ExtendedData": {
     "inputs": [
-      "http://192.168.3.150:8080/ElPol_report_2/WS/Task/1cws/GetAllTask?wsdl"
+      "http://192.168.3.150:8080/ElPol_Test/ws/Task/"
     ],
     "collectionTypes": [
       "System.Array",

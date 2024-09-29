@@ -17,13 +17,16 @@ namespace MobileApp.Controllers
         public IEnumerable<UserTasks> Get()
         {
             BasicHttpBinding myBinding = new BasicHttpBinding();
+            myBinding.MaxReceivedMessageSize = 2000000;
             myBinding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
             myBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
 
-            EndpointAddress ea = new EndpointAddress("http://192.168.3.150:8080/ElPol_report_2/WS/Task/1cws/GetAllTask");
+            EndpointAddress ea = new EndpointAddress("http://192.168.3.150:8080/ElPol_Test/WS/Task/1cws/GetAllTask");
             TaskPortTypeClient Service = new TaskPortTypeClient(myBinding, ea);
+            
             Service.ClientCredentials.UserName.UserName = "IIS_USER";
             Service.ClientCredentials.UserName.Password = "457970";
+            
             var ListTask = Service.GetAllTaskAsync().Result;
 
             string Bodyt = ListTask.Body.@return;
@@ -43,7 +46,7 @@ namespace MobileApp.Controllers
             myBinding.Security.Mode = BasicHttpSecurityMode.TransportCredentialOnly;
             myBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
 
-            EndpointAddress ea = new EndpointAddress("http://192.168.3.150:8080/ElPol_report_2/WS/Task/1cws/SaveTask/" + taskone);
+            EndpointAddress ea = new EndpointAddress("http://192.168.3.150:8080/ElPol_Test/WS/Task/1cws/SaveTask/" + taskone);
             TaskPortTypeClient Service = new TaskPortTypeClient(myBinding, ea);
             Service.ClientCredentials.UserName.UserName = "IIS_USER";
             Service.ClientCredentials.UserName.Password = "457970";
